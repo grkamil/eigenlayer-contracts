@@ -127,7 +127,7 @@ contract StrategyManager is
         IERC20 token,
         uint256 shares
     ) external onlyDelegationManager returns (uint256, uint256) {
-        return _addShares(staker, token, strategy, shares);
+        return _addShares(staker, strategy, token, shares);
     }
 
     /// @inheritdoc IShareManager
@@ -206,8 +206,8 @@ contract StrategyManager is
      */
     function _addShares(
         address staker,
-        IERC20 token,
         IStrategy strategy,
+        IERC20 token,
         uint256 shares
     ) internal returns (uint256, uint256) {
         // sanity checks on inputs
@@ -251,7 +251,7 @@ contract StrategyManager is
         shares = strategy.deposit(token, amount);
 
         // add the returned shares to the staker's existing shares for this strategy
-        (uint256 prevDepositShares, uint256 addedShares) = _addShares(staker, token, strategy, shares);
+        (uint256 prevDepositShares, uint256 addedShares) = _addShares(staker, strategy, token, shares);
 
         // Increase shares delegated to operator
         delegation.increaseDelegatedShares({
@@ -376,12 +376,12 @@ contract StrategyManager is
         return _calculateSignableDigest(
             keccak256(
                 abi.encode(
-                    DEPOSIT_TYPEHASH, 
-                    staker, 
-                    strategy, 
-                    token, 
-                    amount, 
-                    nonce, 
+                    DEPOSIT_TYPEHASH,
+                    staker,
+                    strategy,
+                    token,
+                    amount,
+                    nonce,
                     expiry
                 )
             )
