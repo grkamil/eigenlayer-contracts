@@ -160,7 +160,6 @@ contract EigenPodManager is
     function addShares(
         address staker,
         IStrategy strategy,
-        IERC20,
         uint256 shares
     ) external onlyDelegationManager returns (uint256, uint256) {
         require(strategy == beaconChainETHStrategy, InvalidStrategy());
