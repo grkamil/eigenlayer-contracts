@@ -34,8 +34,8 @@ contract CompleteWithdrawFromStrategy is Script, Test {
         vm.startBroadcast();
 
         // Add token to array
-        IERC20[] memory tokens = new IERC20[](1);
-        tokens[0] = IERC20(token);
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](1);
+        tokens[0] = IERC20Upgradeable(token);
 
         // Get the withdrawal struct
         IDelegationManagerTypes.Withdrawal memory withdrawal = getWithdrawalStruct(

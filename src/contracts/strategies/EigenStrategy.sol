@@ -2,7 +2,7 @@
 pragma solidity ^0.8.27;
 
 // NOTE: Mainnet uses the OpenZeppelin v4.9.0 contracts, but this imports the 4.7.1 version. This will be changed after an upgrade.
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin-upgrades/contracts/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "../interfaces/IStrategyManager.sol";
 import "../strategies/StrategyBase.sol";
 import "../interfaces/IEigen.sol";
@@ -25,7 +25,7 @@ import "../interfaces/IEigen.sol";
  * We specifically use a share offset of `SHARES_OFFSET` and a balance offset of `BALANCE_OFFSET`.
  */
 contract EigenStrategy is StrategyBase {
-    using SafeERC20 for IERC20;
+    using SafeERC20Upgradeable for IERC20Upgradeable;
 
     /**
      * @notice EIGEN can be deposited into this strategy, where it is unwrapped into bEIGEN and staked in
@@ -40,7 +40,7 @@ contract EigenStrategy is StrategyBase {
         IPauserRegistry _pauserRegistry
     ) StrategyBase(_strategyManager, _pauserRegistry) {}
 
-    function initialize(IEigen _EIGEN, IERC20 _bEIGEN) public virtual initializer {
+    function initialize(IEigen _EIGEN, IERC20Upgradeable _bEIGEN) public virtual initializer {
         EIGEN = _EIGEN;
         _initializeStrategyBase(_bEIGEN);
     }
@@ -53,7 +53,7 @@ contract EigenStrategy is StrategyBase {
      * @param token token to be deposited, can be either EIGEN or bEIGEN. If EIGEN, then is unwrapped into bEIGEN
      * @param amount deposit amount
      */
-    function _beforeDeposit(IERC20 token, uint256 amount) internal virtual override {
+    function _beforeDeposit(IERC20Upgradeable token, uint256 amount) internal virtual override {
         require(token == underlyingToken || token == EIGEN, OnlyUnderlyingToken());
 
         if (token == EIGEN) {
@@ -71,7 +71,7 @@ contract EigenStrategy is StrategyBase {
      */
     function _beforeWithdrawal(
         address, /*recipient*/
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 /*amountShares*/
     ) internal virtual override {
         require(token == underlyingToken || token == EIGEN, OnlyUnderlyingToken());
@@ -86,7 +86,7 @@ contract EigenStrategy is StrategyBase {
      * @param token token to be withdrawn, can be either EIGEN or bEIGEN. If EIGEN, then bEIGEN is wrapped into EIGEN
      * @param amountToSend amount of tokens to transfer
      */
-    function _afterWithdrawal(address recipient, IERC20 token, uint256 amountToSend) internal virtual override {
+    function _afterWithdrawal(address recipient, IERC20Upgradeable token, uint256 amountToSend) internal virtual override {
         if (token == EIGEN) {
             // wrap bEIGEN into EIGEN assuming a 1-1 wrapping amount
             // the strategy will then hold `amountToSend` of EIGEN

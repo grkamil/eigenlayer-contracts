@@ -24,7 +24,7 @@ contract Devnet_Lifecycle_Test is Test, IAllocationManagerTypes {
     AVSDirectory public avsDirectory;
     AllocationManager public allocationManager;
     StrategyBase public wethStrategy;
-    IERC20 public weth;
+    IERC20Upgradeable public weth;
 
     Vm cheats = Vm(VM_ADDRESS);
 
@@ -48,7 +48,7 @@ contract Devnet_Lifecycle_Test is Test, IAllocationManagerTypes {
         avsDirectory = AVSDirectory(0xCa839541648D3e23137457b1Fd4A06bccEADD33a);
         allocationManager = AllocationManager(0xAbD5Dd30CaEF8598d4EadFE7D45Fd582EDEade15);
         wethStrategy = StrategyBase(0x4f812633943022fA97cb0881683aAf9f318D5Caa);
-        weth = IERC20(0x94373a4919B3240D86eA41593D5eBa789FEF3848);
+        weth = IERC20Upgradeable(0x94373a4919B3240D86eA41593D5eBa789FEF3848);
 
         // Set operator
         operator = cheats.addr(operatorPk);
@@ -224,7 +224,7 @@ contract Devnet_Lifecycle_Test is Test, IAllocationManagerTypes {
         cheats.roll(block.number + delegationManager.minWithdrawalDelayBlocks());
 
         // Complete withdrawal
-        IERC20[] memory tokens = new IERC20[](1);
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](1);
         tokens[0] = weth;
         delegationManager.completeQueuedWithdrawal(withdrawal, tokens, true);
 

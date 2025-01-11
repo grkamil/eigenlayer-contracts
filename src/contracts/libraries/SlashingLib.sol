@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.27;
 
-import "@openzeppelin/contracts/utils/math/Math.sol";
+import "@openzeppelin-upgrades/contracts/utils/math/MathUpgradeable.sol";
 import "@openzeppelin-upgrades/contracts/utils/math/SafeCastUpgradeable.sol";
 
 /// @dev All scaling factors have `1e18` as an initial/default value. This value is represented
@@ -32,7 +32,7 @@ struct DepositScalingFactor {
 using SlashingLib for DepositScalingFactor global;
 
 library SlashingLib {
-    using Math for uint256;
+    using MathUpgradeable for uint256;
     using SlashingLib for uint256;
     using SafeCastUpgradeable for uint256;
 
@@ -52,14 +52,14 @@ library SlashingLib {
      * an incoming slashing request isn't rounded down to 0 and an operator is able to avoid slashing penalties.
      */
     function mulWadRoundUp(uint256 x, uint256 y) internal pure returns (uint256) {
-        return x.mulDiv(y, WAD, Math.Rounding.Up);
+        return x.mulDiv(y, WAD, MathUpgradeable.Rounding.Up);
     }
 
     /**
      * @notice Used as part of calculating wadSlashed in the EPM to ensure that we don't overslash
      */
     function divWadRoundUp(uint256 x, uint256 y) internal pure returns (uint256) {
-        return x.mulDiv(WAD, y, Math.Rounding.Up);
+        return x.mulDiv(WAD, y, MathUpgradeable.Rounding.Up);
     }
 
     // GETTERS
@@ -173,6 +173,6 @@ library SlashingLib {
         uint256 newMaxMagnitude
     ) internal pure returns (uint256) {
         // round up mulDiv so we don't overslash
-        return operatorShares - operatorShares.mulDiv(newMaxMagnitude, prevMaxMagnitude, Math.Rounding.Up);
+        return operatorShares - operatorShares.mulDiv(newMaxMagnitude, prevMaxMagnitude, MathUpgradeable.Rounding.Up);
     }
 }

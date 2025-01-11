@@ -1,23 +1,23 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.27;
 
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin-upgrades/contracts/utils/structs/EnumerableSetUpgradeable.sol";
 
 import "../interfaces/IPermissionController.sol";
 
 abstract contract PermissionControllerStorage is IPermissionController {
-    using EnumerableSet for EnumerableSet.Bytes32Set;
-    using EnumerableSet for EnumerableSet.AddressSet;
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.Bytes32Set;
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     struct AccountPermissions {
         /// @notice The pending admins of the account
-        EnumerableSet.AddressSet pendingAdmins;
+        EnumerableSetUpgradeable.AddressSet pendingAdmins;
         /// @notice The admins of the account
-        EnumerableSet.AddressSet admins;
+        EnumerableSetUpgradeable.AddressSet admins;
         /// @notice Mapping from an appointee to the list of encoded target & selectors
-        mapping(address appointee => EnumerableSet.Bytes32Set) appointeePermissions;
+        mapping(address appointee => EnumerableSetUpgradeable.Bytes32Set) appointeePermissions;
         /// @notice Mapping from encoded target & selector to the list of appointees
-        mapping(bytes32 targetSelector => EnumerableSet.AddressSet) permissionAppointees;
+        mapping(bytes32 targetSelector => EnumerableSetUpgradeable.AddressSet) permissionAppointees;
     }
 
     /// @notice Mapping from an account to its permission

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.27;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin-upgrades/contracts/token/ERC20/IERC20Upgradeable.sol";
 import "../libraries/SlashingLib.sol";
 import "./IStrategy.sol";
 
@@ -24,14 +24,14 @@ interface IShareManager {
     function addShares(
         address staker,
         IStrategy strategy,
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 shares
     ) external returns (uint256, uint256);
 
     /// @notice Used by the DelegationManager to convert withdrawn descaled shares to tokens and send them to a staker
     /// @dev strategy must be beaconChainETH when talking to the EigenPodManager
     /// @dev token is not validated when talking to the EigenPodManager
-    function withdrawSharesAsTokens(address staker, IStrategy strategy, IERC20 token, uint256 shares) external;
+    function withdrawSharesAsTokens(address staker, IStrategy strategy, IERC20Upgradeable token, uint256 shares) external;
 
     /// @notice Returns the current shares of `user` in `strategy`
     /// @dev strategy must be beaconChainETH when talking to the EigenPodManager

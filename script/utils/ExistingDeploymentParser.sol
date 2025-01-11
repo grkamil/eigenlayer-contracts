@@ -475,7 +475,7 @@ contract ExistingDeploymentParser is Script, Logger {
         // Strategies
         for (uint256 i = 0; i < deployedStrategyArray.length; ++i) {
             cheats.expectRevert(bytes("Initializable: contract is already initialized"));
-            StrategyBaseTVLLimits(address(deployedStrategyArray[i])).initialize(0, 0, IERC20(address(0)));
+            StrategyBaseTVLLimits(address(deployedStrategyArray[i])).initialize(0, 0, IERC20Upgradeable(address(0)));
         }
     }
 

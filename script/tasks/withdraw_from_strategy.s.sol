@@ -37,8 +37,8 @@ contract WithdrawFromStrategy is Script, Test {
         uint256[] memory shares = new uint256[](1);
         shares[0] = amount;
         // Add token to array
-        IERC20[] memory tokens = new IERC20[](1);
-        tokens[0] = IERC20(token);
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](1);
+        tokens[0] = IERC20Upgradeable(token);
 
         // Get the current withdrawal nonce for sender
         uint256 nonce = dm.cumulativeWithdrawalsQueued(msg.sender);

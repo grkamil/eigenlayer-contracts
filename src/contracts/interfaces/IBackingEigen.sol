@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.5.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin-upgrades/contracts/token/ERC20/IERC20Upgradeable.sol";
 
-interface IBackingEigen is IERC20 {
+interface IBackingEigen is IERC20Upgradeable {
     /**
      * @notice This function allows the owner to set the allowedFrom status of an address
      * @param from the address whose allowedFrom status is being set
@@ -49,7 +49,7 @@ interface IBackingEigen is IERC20 {
     ) external;
 
     /// @notice the address of the wrapped Eigen token EIGEN
-    function EIGEN() external view returns (IERC20);
+    function EIGEN() external view returns (IERC20Upgradeable);
 
     /// @notice the timestamp after which transfer restrictions are disabled
     function transferRestrictionsDisabledAfter() external view returns (uint256);

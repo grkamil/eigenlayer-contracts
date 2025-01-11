@@ -78,7 +78,7 @@ contract EigenPodManagerUnitTests is EigenLayerUnitTestSetup, IEigenPodManagerEv
         
         if (shares >= 0) {
             cheats.prank(address(delegationManagerMock));
-            eigenPodManager.addShares(podOwner, beaconChainETHStrategy, IERC20(address(0)), uint256(shares));
+            eigenPodManager.addShares(podOwner, beaconChainETHStrategy, IERC20Upgradeable(address(0)), uint256(shares));
         } else {
             EigenPodManagerWrapper(address(eigenPodManager)).setPodOwnerShares(podOwner, shares);
         }
@@ -193,20 +193,20 @@ contract EigenPodManagerUnitTests_ShareUpdateTests is EigenPodManagerUnitTests {
         cheats.assume(notDelegationManager != address(delegationManagerMock));
         cheats.prank(notDelegationManager);
         cheats.expectRevert(IEigenPodManagerErrors.OnlyDelegationManager.selector);
-        eigenPodManager.addShares(defaultStaker, IStrategy(address(0)), IERC20(address(0)), 0);
+        eigenPodManager.addShares(defaultStaker, IStrategy(address(0)), IERC20Upgradeable(address(0)), 0);
     }
     
     function test_addShares_revert_podOwnerZeroAddress() public {
         cheats.prank(address(delegationManagerMock));
         cheats.expectRevert(IEigenPodErrors.InputAddressZero.selector);
-        eigenPodManager.addShares(address(0), beaconChainETHStrategy, IERC20(address(0)), 0);
+        eigenPodManager.addShares(address(0), beaconChainETHStrategy, IERC20Upgradeable(address(0)), 0);
     }
 
     function testFuzz_addShares_revert_sharesNegative(int256 shares) public {
         cheats.assume(shares < 0);
         cheats.prank(address(delegationManagerMock));
         cheats.expectRevert(IEigenPodManagerErrors.SharesNegative.selector);
-        eigenPodManager.addShares(defaultStaker, beaconChainETHStrategy, IERC20(address(0)), uint256(shares));
+        eigenPodManager.addShares(defaultStaker, beaconChainETHStrategy, IERC20Upgradeable(address(0)), uint256(shares));
     }
 
     function testFuzz_addShares(uint256 shares) public {
@@ -217,7 +217,7 @@ contract EigenPodManagerUnitTests_ShareUpdateTests is EigenPodManagerUnitTests {
 
         // Add shares
         cheats.prank(address(delegationManagerMock));
-        eigenPodManager.addShares(defaultStaker, beaconChainETHStrategy, IERC20(address(0)), shares);
+        eigenPodManager.addShares(defaultStaker, beaconChainETHStrategy, IERC20Upgradeable(address(0)), shares);
 
         // Check storage update
         assertEq(eigenPodManager.podOwnerDepositShares(defaultStaker), int256(shares), "Incorrect number of shares added");
@@ -315,20 +315,20 @@ contract EigenPodManagerUnitTests_WithdrawSharesAsTokensTests is EigenPodManager
     function test_withdrawSharesAsTokens_revert_invalidStrategy() public {
         cheats.prank(address(delegationManagerMock));
         cheats.expectRevert(IEigenPodManagerErrors.InvalidStrategy.selector);
-        eigenPodManager.withdrawSharesAsTokens(defaultStaker, IStrategy(address(0)), IERC20(address(0)), 0);
+        eigenPodManager.withdrawSharesAsTokens(defaultStaker, IStrategy(address(0)), IERC20Upgradeable(address(0)), 0);
     }
 
     function test_withdrawSharesAsTokens_revert_podOwnerZeroAddress() public {
         cheats.prank(address(delegationManagerMock));
         cheats.expectRevert(IEigenPodErrors.InputAddressZero.selector);
-        eigenPodManager.withdrawSharesAsTokens(address(0), beaconChainETHStrategy, IERC20(address(0)), 0);
+        eigenPodManager.withdrawSharesAsTokens(address(0), beaconChainETHStrategy, IERC20Upgradeable(address(0)), 0);
     }
 
     function testFuzz_withdrawSharesAsTokens_revert_sharesNegative(int256 shares) public {
         cheats.assume(shares < 0);
         cheats.prank(address(delegationManagerMock));
         cheats.expectRevert(IEigenPodManagerErrors.SharesNegative.selector);
-        eigenPodManager.withdrawSharesAsTokens(defaultStaker, beaconChainETHStrategy, IERC20(address(0)), uint256(shares));
+        eigenPodManager.withdrawSharesAsTokens(defaultStaker, beaconChainETHStrategy, IERC20Upgradeable(address(0)), uint256(shares));
     }
 
     /**
@@ -356,7 +356,7 @@ contract EigenPodManagerUnitTests_WithdrawSharesAsTokensTests is EigenPodManager
             abi.encodeWithSelector(IEigenPod.withdrawRestakedBeaconChainETH.selector, defaultStaker, 1e18),
             1
         );
-        eigenPodManager.withdrawSharesAsTokens(defaultStaker, beaconChainETHStrategy, IERC20(address(0)), sharesToWithdraw);
+        eigenPodManager.withdrawSharesAsTokens(defaultStaker, beaconChainETHStrategy, IERC20Upgradeable(address(0)), sharesToWithdraw);
 
         // Check storage update
         assertEq(eigenPodManager.podOwnerDepositShares(defaultStaker), int256(0), "Shares not reduced to 0");
@@ -384,7 +384,7 @@ contract EigenPodManagerUnitTests_WithdrawSharesAsTokensTests is EigenPodManager
             emptyBytes, // Cheatcode checks a partial match starting at the first byte of the calldata
             0
         );
-        eigenPodManager.withdrawSharesAsTokens(defaultStaker, beaconChainETHStrategy, IERC20(address(0)), sharesToWithdraw);
+        eigenPodManager.withdrawSharesAsTokens(defaultStaker, beaconChainETHStrategy, IERC20Upgradeable(address(0)), sharesToWithdraw);
 
         // Check storage update
         int256 expectedShares = sharesBeginning + int256(sharesToWithdraw);
@@ -407,7 +407,7 @@ contract EigenPodManagerUnitTests_WithdrawSharesAsTokensTests is EigenPodManager
             abi.encodeWithSelector(IEigenPod.withdrawRestakedBeaconChainETH.selector, defaultStaker, sharesToWithdraw), 
             1
         );
-        eigenPodManager.withdrawSharesAsTokens(defaultStaker, beaconChainETHStrategy, IERC20(address(0)), sharesToWithdraw);
+        eigenPodManager.withdrawSharesAsTokens(defaultStaker, beaconChainETHStrategy, IERC20Upgradeable(address(0)), sharesToWithdraw);
 
         // Check storage remains the same
         assertEq(eigenPodManager.podOwnerDepositShares(defaultStaker), sharesBeginning, "Shares should not be adjusted");

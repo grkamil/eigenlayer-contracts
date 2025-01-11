@@ -32,7 +32,7 @@ contract StrategyBaseTVLLimits is StrategyBase {
     function initialize(
         uint256 _maxPerDeposit,
         uint256 _maxTotalDeposits,
-        IERC20 _underlyingToken
+        IERC20Upgradeable _underlyingToken
     ) public virtual initializer {
         _setTVLLimits(_maxPerDeposit, _maxTotalDeposits);
         _initializeStrategyBase(_underlyingToken);
@@ -75,7 +75,7 @@ contract StrategyBaseTVLLimits is StrategyBase {
      * c) increases in the token balance of this contract through other effects – including token rebasing – may cause similar issues to (a) and (b).
      * @param amount The amount of `token` being deposited
      */
-    function _beforeDeposit(IERC20 token, uint256 amount) internal virtual override {
+    function _beforeDeposit(IERC20Upgradeable token, uint256 amount) internal virtual override {
         require(amount <= maxPerDeposit, MaxPerDepositExceedsMax());
         require(_tokenBalance() <= maxTotalDeposits, BalanceExceedsMaxTotalDeposits());
 

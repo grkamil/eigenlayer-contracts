@@ -3,9 +3,9 @@ pragma solidity ^0.8.27;
 
 import "../interfaces/IStrategyManager.sol";
 import "../permissions/Pausable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin-upgrades/contracts/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin-upgrades/contracts/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
 
 /**
@@ -29,7 +29,7 @@ import "@openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
  * We specifically use a share offset of `SHARES_OFFSET` and a balance offset of `BALANCE_OFFSET`.
  */
 contract StrategyBase is Initializable, Pausable, IStrategy {
-    using SafeERC20 for IERC20;
+    using SafeERC20Upgradeable for IERC20Upgradeable;
 
     uint8 internal constant PAUSED_DEPOSITS = 0;
     uint8 internal constant PAUSED_WITHDRAWALS = 1;
@@ -57,7 +57,7 @@ contract StrategyBase is Initializable, Pausable, IStrategy {
     IStrategyManager public immutable strategyManager;
 
     /// @notice The underlying token for shares in this Strategy
-    IERC20 public underlyingToken;
+    IERC20Upgradeable public underlyingToken;
 
     /// @notice The total number of extant shares in this Strategy
     uint256 public totalShares;
@@ -75,14 +75,14 @@ contract StrategyBase is Initializable, Pausable, IStrategy {
     }
 
     function initialize(
-        IERC20 _underlyingToken
+        IERC20Upgradeable _underlyingToken
     ) public virtual initializer {
         _initializeStrategyBase(_underlyingToken);
     }
 
     /// @notice Sets the `underlyingToken` and `pauserRegistry` for the strategy.
     function _initializeStrategyBase(
-        IERC20 _underlyingToken
+        IERC20Upgradeable _underlyingToken
     ) internal onlyInitializing {
         underlyingToken = _underlyingToken;
         _setPausedStatus(_UNPAUSE_ALL);
@@ -103,7 +103,7 @@ contract StrategyBase is Initializable, Pausable, IStrategy {
      * @return newShares is the number of new shares issued at the current exchange ratio.
      */
     function deposit(
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 amount
     ) external virtual override onlyWhenNotPaused(PAUSED_DEPOSITS) onlyStrategyManager returns (uint256 newShares) {
         // call hook to allow for any pre-deposit logic
@@ -147,7 +147,7 @@ contract StrategyBase is Initializable, Pausable, IStrategy {
      */
     function withdraw(
         address recipient,
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 amountShares
     ) external virtual override onlyWhenNotPaused(PAUSED_WITHDRAWALS) onlyStrategyManager {
         // call hook to allow for any pre-withdrawal logic
@@ -181,7 +181,7 @@ contract StrategyBase is Initializable, Pausable, IStrategy {
      * @param token The token being deposited
      */
     function _beforeDeposit(
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 // amount
     ) internal virtual {
         require(token == underlyingToken, OnlyUnderlyingToken());
@@ -193,7 +193,7 @@ contract StrategyBase is Initializable, Pausable, IStrategy {
      */
     function _beforeWithdrawal(
         address, // recipient
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 // amountShares
     ) internal virtual {
         require(token == underlyingToken, OnlyUnderlyingToken());
@@ -206,7 +206,7 @@ contract StrategyBase is Initializable, Pausable, IStrategy {
      * @param token The ERC20 being transferred
      * @param amountToSend The amount of `token` to transfer
      */
-    function _afterWithdrawal(address recipient, IERC20 token, uint256 amountToSend) internal virtual {
+    function _afterWithdrawal(address recipient, IERC20Upgradeable token, uint256 amountToSend) internal virtual {
         token.safeTransfer(recipient, amountToSend);
     }
 

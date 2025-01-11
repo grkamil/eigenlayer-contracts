@@ -298,9 +298,9 @@ contract User is Logger, IDelegationManagerTypes, IAllocationManagerTypes {
 
     function completeWithdrawalsAsTokens(
         Withdrawal[] memory withdrawals
-    ) public virtual createSnapshot returns (IERC20[][] memory tokens) {
+    ) public virtual createSnapshot returns (IERC20Upgradeable[][] memory tokens) {
         print.method("completeWithdrawalsAsTokens");
-        tokens = new IERC20[][](withdrawals.length);
+        tokens = new IERC20Upgradeable[][](withdrawals.length);
         for (uint256 i = 0; i < withdrawals.length; i++) {
             tokens[i] = _completeQueuedWithdrawal(withdrawals[i], true);
         }
@@ -308,16 +308,16 @@ contract User is Logger, IDelegationManagerTypes, IAllocationManagerTypes {
 
     function completeWithdrawalAsTokens(
         Withdrawal memory withdrawal
-    ) public virtual createSnapshot returns (IERC20[] memory) {
+    ) public virtual createSnapshot returns (IERC20Upgradeable[] memory) {
         print.method("completeWithdrawalsAsTokens");
         return _completeQueuedWithdrawal(withdrawal, true);
     }
 
     function completeWithdrawalsAsShares(
         Withdrawal[] memory withdrawals
-    ) public virtual createSnapshot returns (IERC20[][] memory tokens) {
+    ) public virtual createSnapshot returns (IERC20Upgradeable[][] memory tokens) {
         print.method("completeWithdrawalAsShares");
-        tokens = new IERC20[][](withdrawals.length);
+        tokens = new IERC20Upgradeable[][](withdrawals.length);
         for (uint256 i = 0; i < withdrawals.length; i++) {
             tokens[i] = _completeQueuedWithdrawal(withdrawals[i], false);
         }
@@ -325,7 +325,7 @@ contract User is Logger, IDelegationManagerTypes, IAllocationManagerTypes {
 
     function completeWithdrawalAsShares(
         Withdrawal memory withdrawal
-    ) public virtual createSnapshot returns (IERC20[] memory) {
+    ) public virtual createSnapshot returns (IERC20Upgradeable[] memory) {
         print.method("completeWithdrawalAsShares");
         return _completeQueuedWithdrawal(withdrawal, false);
     }
@@ -410,7 +410,7 @@ contract User is Logger, IDelegationManagerTypes, IAllocationManagerTypes {
                 beaconChain.advanceEpoch_NoRewards();
                 _verifyWithdrawalCredentials(newValidators);
             } else {
-                IERC20 underlyingToken = strat.underlyingToken();
+                IERC20Upgradeable underlyingToken = strat.underlyingToken();
                 underlyingToken.approve(address(strategyManager), tokenBalance);
                 strategyManager.depositIntoStrategy(strat, underlyingToken, tokenBalance);
                 print.gasUsed();
@@ -433,7 +433,7 @@ contract User is Logger, IDelegationManagerTypes, IAllocationManagerTypes {
                 }
             } else {
                 uint256 tokens = uint256(delta);
-                IERC20 underlyingToken = strat.underlyingToken();
+                IERC20Upgradeable underlyingToken = strat.underlyingToken();
                 underlyingToken.approve(address(strategyManager), tokens);
                 strategyManager.depositIntoStrategy(strat, underlyingToken, tokens);
                 print.gasUsed();
@@ -456,8 +456,8 @@ contract User is Logger, IDelegationManagerTypes, IAllocationManagerTypes {
     function _completeQueuedWithdrawal(
         Withdrawal memory withdrawal,
         bool receiveAsTokens
-    ) internal virtual returns (IERC20[] memory) {
-        IERC20[] memory tokens = new IERC20[](withdrawal.strategies.length);
+    ) internal virtual returns (IERC20Upgradeable[] memory) {
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](withdrawal.strategies.length);
 
         for (uint256 i = 0; i < tokens.length; i++) {
             IStrategy strat = withdrawal.strategies[i];
@@ -734,7 +734,7 @@ contract User_AltMethods is User {
                 _verifyWithdrawalCredentials(newValidators);
             } else {
                 // Approve token
-                IERC20 underlyingToken = strat.underlyingToken();
+                IERC20Upgradeable underlyingToken = strat.underlyingToken();
                 underlyingToken.approve(address(strategyManager), tokenBalance);
 
                 // Get signature

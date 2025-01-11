@@ -43,7 +43,7 @@ contract StrategyFactory is StrategyFactoryStorage, OwnableUpgradeable, Pausable
      * like those that conform to ERC777.
      */
     function deployNewStrategy(
-        IERC20 token
+        IERC20Upgradeable token
     ) external onlyWhenNotPaused(PAUSED_NEW_STRATEGIES) returns (IStrategy newStrategy) {
         require(!isBlacklisted[token], BlacklistedToken());
         require(deployedStrategies[token] == IStrategy(address(0)), StrategyAlreadyExists());
@@ -66,7 +66,7 @@ contract StrategyFactory is StrategyFactoryStorage, OwnableUpgradeable, Pausable
      * @param tokens An array of token addresses to blacklist.
      */
     function blacklistTokens(
-        IERC20[] calldata tokens
+        IERC20Upgradeable[] calldata tokens
     ) external onlyOwner {
         IStrategy[] memory strategiesToRemove = new IStrategy[](tokens.length);
         uint256 removeIdx = 0;
@@ -114,7 +114,7 @@ contract StrategyFactory is StrategyFactoryStorage, OwnableUpgradeable, Pausable
         strategyManager.removeStrategiesFromDepositWhitelist(strategiesToRemoveFromWhitelist);
     }
 
-    function _setStrategyForToken(IERC20 token, IStrategy strategy) internal {
+    function _setStrategyForToken(IERC20Upgradeable token, IStrategy strategy) internal {
         deployedStrategies[token] = strategy;
         emit StrategySetForToken(token, strategy);
     }

@@ -5,7 +5,7 @@ import "@openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
 import "./PermissionControllerStorage.sol";
 
 contract PermissionController is Initializable, PermissionControllerStorage {
-    using EnumerableSet for *;
+    using EnumerableSetUpgradeable for *;
 
     modifier onlyAdmin(
         address account
@@ -45,7 +45,7 @@ contract PermissionController is Initializable, PermissionControllerStorage {
 
     /// @inheritdoc IPermissionController
     function removePendingAdmin(address account, address admin) external onlyAdmin(account) {
-        EnumerableSet.AddressSet storage pendingAdmins = _permissions[account].pendingAdmins;
+        EnumerableSetUpgradeable.AddressSet storage pendingAdmins = _permissions[account].pendingAdmins;
 
         // Remove the admin from the account's pending admins
         // Revert if the admin is not pending
@@ -73,7 +73,7 @@ contract PermissionController is Initializable, PermissionControllerStorage {
 
     /// @inheritdoc IPermissionController
     function removeAdmin(address account, address admin) external onlyAdmin(account) {
-        EnumerableSet.AddressSet storage admins = _permissions[account].admins;
+        EnumerableSetUpgradeable.AddressSet storage admins = _permissions[account].admins;
 
         require(admins.length() > 1, CannotHaveZeroAdmins());
 
@@ -205,7 +205,8 @@ contract PermissionController is Initializable, PermissionControllerStorage {
         address account,
         address appointee
     ) external view returns (address[] memory, bytes4[] memory) {
-        EnumerableSet.Bytes32Set storage appointeePermissions = _permissions[account].appointeePermissions[appointee];
+        EnumerableSetUpgradeable.Bytes32Set storage appointeePermissions =
+            _permissions[account].appointeePermissions[appointee];
 
         uint256 length = appointeePermissions.length();
 

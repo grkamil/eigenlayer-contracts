@@ -5,7 +5,7 @@ import "../../contracts/token/Eigen.sol";
 
 contract EigenHarness is Eigen {
    
-    constructor(IERC20 _bEIGEN) Eigen(_bEIGEN) { }
+    constructor(IERC20Upgradeable _bEIGEN) Eigen(_bEIGEN) { }
 
     /// expose internal mint function
     function mint(address to, uint256 amount) public {

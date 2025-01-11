@@ -2,7 +2,7 @@
 pragma solidity ^0.8.27;
 
 import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin-upgrades/contracts/token/ERC20/IERC20Upgradeable.sol";
 import "./IStrategy.sol";
 
 /**
@@ -19,7 +19,7 @@ interface IStrategyFactory {
     /// @dev Thrown when attempting to blacklist a token that is already blacklisted
     error AlreadyBlacklisted();
 
-    event TokenBlacklisted(IERC20 token);
+    event TokenBlacklisted(IERC20Upgradeable token);
 
     /// @notice Upgradeable beacon which new Strategies deployed by this contract point to
     function strategyBeacon() external view returns (IBeacon);
@@ -32,7 +32,7 @@ interface IStrategyFactory {
     /// These strategies MIGHT not be the only strategy for the underlying token
     /// as additional strategies can be whitelisted by the owner of the factory.
     function deployedStrategies(
-        IERC20 token
+        IERC20Upgradeable token
     ) external view returns (IStrategy);
 
     /**
@@ -43,7 +43,7 @@ interface IStrategyFactory {
      * like those that conform to ERC777.
      */
     function deployNewStrategy(
-        IERC20 token
+        IERC20Upgradeable token
     ) external returns (IStrategy newStrategy);
 
     /**
@@ -64,5 +64,5 @@ interface IStrategyFactory {
     event StrategyBeaconModified(IBeacon previousBeacon, IBeacon newBeacon);
 
     /// @notice Emitted whenever a slot is set in the `tokenStrategy` mapping
-    event StrategySetForToken(IERC20 token, IStrategy strategy);
+    event StrategySetForToken(IERC20Upgradeable token, IStrategy strategy);
 }

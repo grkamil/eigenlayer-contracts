@@ -271,7 +271,7 @@ contract IntegrationCheckUtils is IntegrationBase {
         IDelegationManagerTypes.Withdrawal memory withdrawal,
         IStrategy[] memory strategies,
         uint[] memory shares,
-        IERC20[] memory tokens,
+        IERC20Upgradeable[] memory tokens,
         uint[] memory expectedTokens
     ) internal {
         // Common checks
@@ -348,7 +348,7 @@ contract IntegrationCheckUtils is IntegrationBase {
         IAllocationManagerTypes.SlashingParams memory slashingParams,
         uint[] memory expectedTokens
     ) internal {
-        IERC20[] memory tokens = new IERC20[](withdrawal.strategies.length);
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](withdrawal.strategies.length);
 
         for (uint i; i < withdrawal.strategies.length; i++) {
             IStrategy strat = withdrawal.strategies[i];
@@ -397,7 +397,7 @@ contract IntegrationCheckUtils is IntegrationBase {
         IAllocationManagerTypes.AllocateParams memory allocateParams, // TODO - was this needed?
         IAllocationManagerTypes.SlashingParams memory slashingParams
     ) internal {
-        IERC20[] memory tokens = new IERC20[](withdrawal.strategies.length);
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](withdrawal.strategies.length);
 
         for (uint i; i < withdrawal.strategies.length; i++) {
             IStrategy strat = withdrawal.strategies[i];

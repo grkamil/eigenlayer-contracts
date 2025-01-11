@@ -111,9 +111,9 @@ library ArrayLib {
     /// -----------------------------------------------------------------------
 
     function toArray(
-        IERC20 token
-    ) internal pure returns (IERC20[] memory array) {
-        array = new IERC20[](1);
+        IERC20Upgradeable token
+    ) internal pure returns (IERC20Upgradeable[] memory array) {
+        array = new IERC20Upgradeable[](1);
         array[0] = token;
     }
 
@@ -214,9 +214,9 @@ library ArrayLib {
     }
 
     function setLength(
-        IERC20[] memory array,
+        IERC20Upgradeable[] memory array,
         uint256 len
-    ) internal pure returns (IERC20[] memory) {
+    ) internal pure returns (IERC20Upgradeable[] memory) {
         assembly {
             mstore(array, len)
         }
@@ -308,8 +308,8 @@ library ArrayLib {
     }
 
     function contains(
-        IERC20[] memory array,
-        IERC20 x
+        IERC20Upgradeable[] memory array,
+        IERC20Upgradeable x
     ) internal pure returns (bool) {
         for (uint256 i; i < array.length; ++i) {
             if (array[i] == x) return true;
@@ -402,8 +402,8 @@ library ArrayLib {
     }
 
     function indexOf(
-        IERC20[] memory array,
-        IERC20 x
+        IERC20Upgradeable[] memory array,
+        IERC20Upgradeable x
     ) internal pure returns (uint256) {
         for (uint256 i; i < array.length; ++i) {
             if (array[i] == x) return i;

@@ -19,10 +19,10 @@ abstract contract StrategyFactoryStorage is IStrategyFactory {
     /// though deployNewStrategy does whitelist by default.
     /// These strategies MIGHT not be the only strategy for the underlying token
     /// as additional strategies can be whitelisted by the owner of the factory.
-    mapping(IERC20 => IStrategy) public deployedStrategies;
+    mapping(IERC20Upgradeable => IStrategy) public deployedStrategies;
 
     /// @notice Mapping token => Whether or not a strategy can be deployed for the token
-    mapping(IERC20 => bool) public isBlacklisted;
+    mapping(IERC20Upgradeable => bool) public isBlacklisted;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new

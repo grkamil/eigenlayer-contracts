@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.5.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin-upgrades/contracts/token/ERC20/IERC20Upgradeable.sol";
 import "../libraries/SlashingLib.sol";
 
 interface IStrategyErrors {
@@ -38,7 +38,7 @@ interface IStrategyEvents {
      * @param token is the ERC20 token of the strategy
      * @param decimals are the decimals of the ERC20 token in the strategy
      */
-    event StrategyTokenSet(IERC20 token, uint8 decimals);
+    event StrategyTokenSet(IERC20Upgradeable token, uint8 decimals);
 }
 
 /**
@@ -56,7 +56,7 @@ interface IStrategy is IStrategyErrors, IStrategyEvents {
      * `depositIntoStrategy` function, and individual share balances are recorded in the strategyManager as well.
      * @return newShares is the number of new shares issued at the current exchange ratio.
      */
-    function deposit(IERC20 token, uint256 amount) external returns (uint256);
+    function deposit(IERC20Upgradeable token, uint256 amount) external returns (uint256);
 
     /**
      * @notice Used to withdraw tokens from this Strategy, to the `recipient`'s address
@@ -66,7 +66,7 @@ interface IStrategy is IStrategyErrors, IStrategyEvents {
      * @dev This function is only callable by the strategyManager contract. It is invoked inside of the strategyManager's
      * other functions, and individual share balances are recorded in the strategyManager as well.
      */
-    function withdraw(address recipient, IERC20 token, uint256 amountShares) external;
+    function withdraw(address recipient, IERC20Upgradeable token, uint256 amountShares) external;
 
     /**
      * @notice Used to convert a number of shares to the equivalent amount of underlying tokens for this strategy.
@@ -137,7 +137,7 @@ interface IStrategy is IStrategyErrors, IStrategyEvents {
     ) external view returns (uint256);
 
     /// @notice The underlying token for shares in this Strategy
-    function underlyingToken() external view returns (IERC20);
+    function underlyingToken() external view returns (IERC20Upgradeable);
 
     /// @notice The total number of extant shares in this Strategy
     function totalShares() external view returns (uint256);

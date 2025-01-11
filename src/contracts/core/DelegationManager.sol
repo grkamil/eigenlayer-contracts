@@ -33,7 +33,7 @@ contract DelegationManager is
 {
     using SlashingLib for *;
     using Snapshots for Snapshots.DefaultZeroHistory;
-    using EnumerableSet for EnumerableSet.Bytes32Set;
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.Bytes32Set;
 
     // @notice Simple permission for functions that are only callable by the StrategyManager contract OR by the EigenPodManagerContract
     modifier onlyStrategyManagerOrEigenPodManager() {
@@ -202,7 +202,7 @@ contract DelegationManager is
     /// @inheritdoc IDelegationManager
     function completeQueuedWithdrawal(
         Withdrawal calldata withdrawal,
-        IERC20[] calldata tokens,
+        IERC20Upgradeable[] calldata tokens,
         bool receiveAsTokens
     ) external onlyWhenNotPaused(PAUSED_EXIT_WITHDRAWAL_QUEUE) nonReentrant {
         _completeQueuedWithdrawal(withdrawal, tokens, receiveAsTokens);
@@ -211,7 +211,7 @@ contract DelegationManager is
     /// @inheritdoc IDelegationManager
     function completeQueuedWithdrawals(
         Withdrawal[] calldata withdrawals,
-        IERC20[][] calldata tokens,
+        IERC20Upgradeable[][] calldata tokens,
         bool[] calldata receiveAsTokens
     ) external onlyWhenNotPaused(PAUSED_EXIT_WITHDRAWAL_QUEUE) nonReentrant {
         uint256 n = withdrawals.length;
@@ -516,7 +516,7 @@ contract DelegationManager is
      */
     function _completeQueuedWithdrawal(
         Withdrawal memory withdrawal,
-        IERC20[] calldata tokens,
+        IERC20Upgradeable[] calldata tokens,
         bool receiveAsTokens
     ) internal {
         require(tokens.length == withdrawal.strategies.length, InputArrayLengthMismatch());

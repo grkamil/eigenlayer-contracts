@@ -3,7 +3,7 @@ pragma solidity ^0.8.27;
 
 import "@openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin-upgrades/contracts/security/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin-upgrades/contracts/token/ERC20/utils/SafeERC20Upgradeable.sol";
 
 import "../libraries/BeaconChainProofs.sol";
 import "../libraries/BytesLib.sol";
@@ -25,7 +25,7 @@ import "./EigenPodStorage.sol";
  */
 contract EigenPod is Initializable, ReentrancyGuardUpgradeable, EigenPodPausingConstants, EigenPodStorage {
     using BytesLib for bytes;
-    using SafeERC20 for IERC20;
+    using SafeERC20Upgradeable for IERC20Upgradeable;
     using BeaconChainProofs for *;
 
     /**
@@ -353,7 +353,7 @@ contract EigenPod is Initializable, ReentrancyGuardUpgradeable, EigenPodPausingC
 
     /// @notice called by owner of a pod to remove any ERC20s deposited in the pod
     function recoverTokens(
-        IERC20[] memory tokenList,
+        IERC20Upgradeable[] memory tokenList,
         uint256[] memory amountsToWithdraw,
         address recipient
     ) external onlyEigenPodOwner onlyWhenNotPaused(PAUSED_NON_PROOF_WITHDRAWALS) {
@@ -403,7 +403,7 @@ contract EigenPod is Initializable, ReentrancyGuardUpgradeable, EigenPodPausingC
         restakedExecutionLayerGwei -= amountGwei;
         emit RestakedBeaconChainETHWithdrawn(recipient, amountWei);
         // transfer ETH from pod to `recipient` directly
-        Address.sendValue(payable(recipient), amountWei);
+        AddressUpgradeable.sendValue(payable(recipient), amountWei);
     }
 
     /**

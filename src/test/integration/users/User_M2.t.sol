@@ -141,7 +141,7 @@ contract User_M2 is User {
                 }
             } else {
                 uint256 tokens = uint256(delta);
-                IERC20 underlyingToken = strat.underlyingToken();
+                IERC20Upgradeable underlyingToken = strat.underlyingToken();
                 underlyingToken.approve(address(strategyManager), tokens);
                 strategyManager_M2.depositIntoStrategy(strat, underlyingToken, tokens);
             }
@@ -174,8 +174,8 @@ contract User_M2 is User {
     function _completeQueuedWithdrawal_M2(
         IDelegationManager_DeprecatedM2.Withdrawal memory withdrawal,
         bool receiveAsTokens
-    ) internal virtual returns (IERC20[] memory) {
-        IERC20[] memory tokens = new IERC20[](withdrawal.strategies.length);
+    ) internal virtual returns (IERC20Upgradeable[] memory) {
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](withdrawal.strategies.length);
 
         for (uint256 i = 0; i < tokens.length; i++) {
             IStrategy strat = withdrawal.strategies[i];
@@ -264,7 +264,7 @@ contract User_M2_AltMethods is User_M2 {
                 _verifyWithdrawalCredentials(newValidators);
             } else {
                 // Approve token
-                IERC20 underlyingToken = strat.underlyingToken();
+                IERC20Upgradeable underlyingToken = strat.underlyingToken();
                 underlyingToken.approve(address(strategyManager), tokenBalance);
 
                 // Get signature

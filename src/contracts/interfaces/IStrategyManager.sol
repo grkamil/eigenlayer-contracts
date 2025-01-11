@@ -33,7 +33,7 @@ interface IStrategyManagerEvents {
      * @param token Is the token that `staker` deposited.
      * @param shares Is the number of new shares `staker` has been granted in `strategy`.
      */
-    event Deposit(address staker, IERC20 token, IStrategy strategy, uint256 shares);
+    event Deposit(address staker, IERC20Upgradeable token, IStrategy strategy, uint256 shares);
 
     /// @notice Emitted when the `strategyWhitelister` is changed
     event StrategyWhitelisterChanged(address previousAddress, address newAddress);
@@ -83,7 +83,7 @@ interface IStrategyManager is IStrategyManagerErrors, IStrategyManagerEvents, IS
      * WARNING: Depositing tokens that allow reentrancy (eg. ERC-777) into a strategy is not recommended.  This can lead to attack vectors
      *          where the token balance and corresponding strategy shares are not in sync upon reentrancy.
      */
-    function depositIntoStrategy(IStrategy strategy, IERC20 token, uint256 amount) external returns (uint256 shares);
+    function depositIntoStrategy(IStrategy strategy, IERC20Upgradeable token, uint256 amount) external returns (uint256 shares);
 
     /**
      * @notice Used for depositing an asset into the specified strategy with the resultant shares credited to `staker`,
@@ -107,7 +107,7 @@ interface IStrategyManager is IStrategyManagerErrors, IStrategyManagerEvents, IS
      */
     function depositIntoStrategyWithSignature(
         IStrategy strategy,
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 amount,
         address staker,
         uint256 expiry,
@@ -190,7 +190,7 @@ interface IStrategyManager is IStrategyManagerErrors, IStrategyManagerEvents, IS
     function calculateStrategyDepositDigestHash(
         address staker,
         IStrategy strategy,
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 amount,
         uint256 nonce,
         uint256 expiry

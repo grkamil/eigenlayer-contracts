@@ -62,7 +62,7 @@ contract Integration_Deposit_Delegate_Queue_Complete is IntegrationCheckUtils {
 
         for (uint256 i = 0; i < withdrawals.length; i++) {
             uint256[] memory expectedTokens = _calculateExpectedTokens(withdrawals[i].strategies, withdrawals[i].scaledShares);
-            IERC20[] memory tokens = staker.completeWithdrawalAsTokens(withdrawals[i]);
+            IERC20Upgradeable[] memory tokens = staker.completeWithdrawalAsTokens(withdrawals[i]);
             check_Withdrawal_AsTokens_State(staker, operator, withdrawals[i], strategies, shares, tokens, expectedTokens);
         }
 
@@ -194,7 +194,7 @@ contract Integration_Deposit_Delegate_Queue_Complete is IntegrationCheckUtils {
         _rollBlocksForCompleteWithdrawals(withdrawals);
         for (uint256 i = 0; i < withdrawals.length; i++) {
             uint256[] memory expectedTokens = _calculateExpectedTokens(withdrawals[i].strategies, withdrawals[i].scaledShares);
-            IERC20[] memory tokens = staker.completeWithdrawalAsTokens(withdrawals[i]);
+            IERC20Upgradeable[] memory tokens = staker.completeWithdrawalAsTokens(withdrawals[i]);
             check_Withdrawal_AsTokens_State(staker, operator, withdrawals[i], withdrawStrats, withdrawShares, tokens, expectedTokens);
         }
 

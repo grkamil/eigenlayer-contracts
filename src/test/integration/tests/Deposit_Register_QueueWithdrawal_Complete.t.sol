@@ -70,7 +70,7 @@ contract Integration_Deposit_Register_QueueWithdrawal_Complete is IntegrationChe
         // 4. Complete Queued Withdrawal as Tokens
         _rollBlocksForCompleteWithdrawals(withdrawals);
         for (uint i = 0; i < withdrawals.length; i++) {
-            IERC20[] memory tokens = staker.completeWithdrawalAsTokens(withdrawals[i]);
+            IERC20Upgradeable[] memory tokens = staker.completeWithdrawalAsTokens(withdrawals[i]);
             uint[] memory expectedTokens = _calculateExpectedTokens(strategies, shares);
             
             check_Withdrawal_AsTokens_State(staker, staker, withdrawals[i], strategies, shares, tokens, expectedTokens);

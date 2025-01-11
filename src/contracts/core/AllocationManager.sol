@@ -19,8 +19,8 @@ contract AllocationManager is
     ReentrancyGuardUpgradeable,
     PermissionControllerMixin
 {
-    using DoubleEndedQueue for DoubleEndedQueue.Bytes32Deque;
-    using EnumerableSet for *;
+    using DoubleEndedQueueUpgradeable for DoubleEndedQueueUpgradeable.Bytes32Deque;
+    using EnumerableSetUpgradeable for *;
 
     using Snapshots for Snapshots.DefaultWadHistory;
     using OperatorSetLib for OperatorSet;

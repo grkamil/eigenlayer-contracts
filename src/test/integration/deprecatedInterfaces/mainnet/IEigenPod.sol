@@ -150,7 +150,7 @@ interface IEigenPod_DeprecatedM2 {
     ) external;
 
     /// @notice called by owner of a pod to remove any ERC20s deposited in the pod
-    function recoverTokens(IERC20[] memory tokenList, uint256[] memory amountsToWithdraw, address recipient) external;
+    function recoverTokens(IERC20Upgradeable[] memory tokenList, uint256[] memory amountsToWithdraw, address recipient) external;
 
     /// @notice Allows the owner of a pod to update the proof submitter, a permissioned
     /// address that can call `startCheckpoint` and `verifyWithdrawalCredentials`.

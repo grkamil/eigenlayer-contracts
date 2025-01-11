@@ -73,7 +73,7 @@ abstract contract IntegrationDeployer is ExistingDeploymentParser {
     IStrategy[] lstStrats;
     IStrategy[] ethStrats; // only has one strat tbh
     IStrategy[] allStrats; // just a combination of the above 2 lists
-    IERC20[] allTokens; // `allStrats`, but contains all of the underlying tokens instead
+    IERC20Upgradeable[] allTokens; // `allStrats`, but contains all of the underlying tokens instead
 
     // If a token is in this mapping, then we will ignore this LST as it causes issues with reading balanceOf
     mapping(address => bool) public tokensNotTested;
@@ -519,7 +519,7 @@ abstract contract IntegrationDeployer is ExistingDeploymentParser {
         address owner,
         bool useFactory
     ) internal {
-        IERC20 underlyingToken = new ERC20PresetFixedSupply(tokenName, tokenSymbol, initialSupply, owner);
+        IERC20Upgradeable underlyingToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply(tokenName, tokenSymbol, initialSupply, owner)));
 
         StrategyBase strategy;
 
@@ -788,7 +788,7 @@ abstract contract IntegrationDeployer is ExistingDeploymentParser {
             // For each asset, award the user a random balance of the underlying token
             for (uint i = 0; i < numAssets; i++) {
                 IStrategy strat = lstStrats[i];
-                IERC20 underlyingToken = strat.underlyingToken();
+                IERC20Upgradeable underlyingToken = strat.underlyingToken();
                 uint balance = _randUint({min: MIN_BALANCE, max: MAX_BALANCE});
 
                 StdCheats.deal(address(underlyingToken), address(user), balance);
@@ -814,7 +814,7 @@ abstract contract IntegrationDeployer is ExistingDeploymentParser {
             // For each LST, award the user a random balance of the underlying token
             for (uint i = 0; i < numLSTs; i++) {
                 IStrategy strat = lstStrats[i];
-                IERC20 underlyingToken = strat.underlyingToken();
+                IERC20Upgradeable underlyingToken = strat.underlyingToken();
                 uint balance = _randUint({min: MIN_BALANCE, max: MAX_BALANCE});
 
                 StdCheats.deal(address(underlyingToken), address(user), balance);
@@ -850,7 +850,7 @@ abstract contract IntegrationDeployer is ExistingDeploymentParser {
         // For each asset, award the user a random balance of the underlying token
         for (uint i = 0; i < numAssets; i++) {
             IStrategy strat = lstStrats[i];
-            IERC20 underlyingToken = strat.underlyingToken();
+            IERC20Upgradeable underlyingToken = strat.underlyingToken();
             uint balance = _randUint({min: MIN_BALANCE, max: MAX_BALANCE});
 
             StdCheats.deal(address(underlyingToken), address(user), balance);

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.27;
 
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin-upgrades/contracts/utils/structs/EnumerableSetUpgradeable.sol";
 
 import "../libraries/SlashingLib.sol";
 import "../interfaces/IDelegationManager.sol";
@@ -107,7 +107,7 @@ abstract contract DelegationManagerStorage is IDelegationManager {
     /// @notice Returns a list of queued withdrawals for a given `staker`.
     /// @dev Entries are removed when the withdrawal is completed.
     /// @dev This variable only reflects withdrawals that were made after the slashing release.
-    mapping(address staker => EnumerableSet.Bytes32Set withdrawalRoots) internal _stakerQueuedWithdrawalRoots;
+    mapping(address staker => EnumerableSetUpgradeable.Bytes32Set withdrawalRoots) internal _stakerQueuedWithdrawalRoots;
 
     /// @notice Returns the details of a queued withdrawal given by `withdrawalRoot`.
     /// @dev This variable only reflects withdrawals that were made after the slashing release.

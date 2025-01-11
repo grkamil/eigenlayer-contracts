@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.27;
 
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "@openzeppelin/contracts/utils/structs/DoubleEndedQueue.sol";
+import "@openzeppelin-upgrades/contracts/utils/structs/EnumerableSetUpgradeable.sol";
+import "@openzeppelin-upgrades/contracts/utils/structs/DoubleEndedQueueUpgradeable.sol";
 
 import "../interfaces/IAllocationManager.sol";
 import "../interfaces/IDelegationManager.sol";
@@ -44,13 +44,13 @@ abstract contract AllocationManagerStorage is IAllocationManager {
     mapping(address avs => IAVSRegistrar) internal _avsRegistrar;
 
     /// @dev Lists the operator set ids an AVS has created
-    mapping(address avs => EnumerableSet.UintSet) internal _operatorSets;
+    mapping(address avs => EnumerableSetUpgradeable.UintSet) internal _operatorSets;
 
     /// @dev Lists the strategies an AVS supports for an operator set
-    mapping(bytes32 operatorSetKey => EnumerableSet.AddressSet) internal _operatorSetStrategies;
+    mapping(bytes32 operatorSetKey => EnumerableSetUpgradeable.AddressSet) internal _operatorSetStrategies;
 
     /// @dev Lists the members of an AVS's operator set
-    mapping(bytes32 operatorSetKey => EnumerableSet.AddressSet) internal _operatorSetMembers;
+    mapping(bytes32 operatorSetKey => EnumerableSetUpgradeable.AddressSet) internal _operatorSetMembers;
 
     /// OPERATOR => OPERATOR SET (REGISTRATION/DEREGISTRATION)
 
@@ -60,16 +60,16 @@ abstract contract AllocationManagerStorage is IAllocationManager {
     /// @dev Lists the operator sets the operator is registered for. Note that an operator
     /// can be registered without allocated stake. Likewise, an operator can allocate
     /// without being registered.
-    mapping(address operator => EnumerableSet.Bytes32Set) internal registeredSets;
+    mapping(address operator => EnumerableSetUpgradeable.Bytes32Set) internal registeredSets;
 
     /// @dev Lists the operator sets the operator has outstanding allocations in.
-    mapping(address operator => EnumerableSet.Bytes32Set) internal allocatedSets;
+    mapping(address operator => EnumerableSetUpgradeable.Bytes32Set) internal allocatedSets;
 
     /// @dev Contains the operator's registration status for an operator set.
     mapping(address operator => mapping(bytes32 operatorSetKey => RegistrationStatus)) internal registrationStatus;
 
     /// @dev For an operator set, lists all strategies an operator has outstanding allocations from.
-    mapping(address operator => mapping(bytes32 operatorSetKey => EnumerableSet.AddressSet)) internal
+    mapping(address operator => mapping(bytes32 operatorSetKey => EnumerableSetUpgradeable.AddressSet)) internal
         allocatedStrategies;
 
     /// @dev For an operator set and strategy, the current allocated magnitude and any pending modification
@@ -89,7 +89,8 @@ abstract contract AllocationManagerStorage is IAllocationManager {
 
     /// @dev For a strategy, keeps an ordered queue of operator sets that have pending deallocations
     /// These must be completed in order to free up magnitude for future allocation
-    mapping(address operator => mapping(IStrategy strategy => DoubleEndedQueue.Bytes32Deque)) internal deallocationQueue;
+    mapping(address operator => mapping(IStrategy strategy => DoubleEndedQueueUpgradeable.Bytes32Deque)) internal
+        deallocationQueue;
 
     // Construction
 

@@ -19,7 +19,7 @@ contract StrategyBaseUnitTests is Test {
     ProxyAdmin public proxyAdmin;
     PauserRegistry public pauserRegistry;
     IStrategyManager public strategyManager;
-    IERC20 public underlyingToken;
+    IERC20Upgradeable public underlyingToken;
     StrategyBase public strategyImplementation;
     StrategyBase public strategy;
 
@@ -53,7 +53,7 @@ contract StrategyBaseUnitTests is Test {
         
         strategyManager = IStrategyManager(address(new StrategyManagerMock(IDelegationManager(address(0)))));
 
-        underlyingToken = new ERC20PresetFixedSupply("Test Token", "TEST", initialSupply, initialOwner);
+        underlyingToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("Test Token", "TEST", initialSupply, initialOwner)));
 
         strategyImplementation = new StrategyBase(strategyManager, pauserRegistry);
 
@@ -154,12 +154,12 @@ contract StrategyBaseUnitTests is Test {
 
         cheats.expectRevert(IStrategyErrors.OnlyUnderlyingToken.selector);
         cheats.prank(address(strategyManager));
-        strategy.deposit(IERC20(notUnderlyingToken), amountToDeposit);
+        strategy.deposit(IERC20Upgradeable(notUnderlyingToken), amountToDeposit);
     }
 
     function testDepositFailForTooManyShares() public {
         // Deploy token with 1e39 total supply
-        underlyingToken = new ERC20PresetFixedSupply("Test Token", "TEST", 1e39, initialOwner);
+        underlyingToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("Test Token", "TEST", 1e39, initialOwner)));
 
         strategyImplementation = new StrategyBase(strategyManager, pauserRegistry);
 
@@ -275,7 +275,7 @@ contract StrategyBaseUnitTests is Test {
 
         cheats.expectRevert(IStrategyErrors.OnlyUnderlyingToken.selector);
         cheats.prank(address(strategyManager));
-        strategy.withdraw(address(this), IERC20(notUnderlyingToken), amountToWithdraw);
+        strategy.withdraw(address(this), IERC20Upgradeable(notUnderlyingToken), amountToWithdraw);
     }
 
     function testWithdrawFailsWhenSharesGreaterThanTotalShares(uint256 amountToDeposit, uint256 sharesToWithdraw) public virtual {
@@ -293,7 +293,7 @@ contract StrategyBaseUnitTests is Test {
     }
 
     function testWithdrawalFailsWhenTokenTransferFails() public {
-        underlyingToken = new ERC20_SetTransferReverting_Mock(initialSupply, initialOwner);
+        underlyingToken = IERC20Upgradeable(address(new ERC20_SetTransferReverting_Mock(initialSupply, initialOwner)));
 
         strategy = StrategyBase(
             address(

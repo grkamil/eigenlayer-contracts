@@ -2,7 +2,7 @@
 pragma solidity ^0.8.27;
 
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
-import "@openzeppelin/contracts/utils/Create2.sol";
+import "@openzeppelin-upgrades/contracts/utils/Create2Upgradeable.sol";
 
 import "src/contracts/pods/EigenPod.sol";
 import "src/contracts/pods/EigenPodPausingConstants.sol";
@@ -67,7 +67,7 @@ contract EigenPodUnitTests is EigenLayerUnitTestSetup, EigenPodPausingConstants,
 
         // Deploy Proxy same way as EigenPodManager does
         eigenPod = EigenPod(payable(
-            Create2.deploy(
+            Create2Upgradeable.deploy(
                 0,
                 bytes32(uint256(uint160(address(this)))),
                 // set the beacon address to the eigenPodBeacon
@@ -562,8 +562,8 @@ contract EigenPodUnitTests_recoverTokens is EigenPodUnitTests {
         address podOwner = pod.podOwner();
 
         cheats.assume(invalidCaller != podOwner);
-        IERC20[] memory tokens = new IERC20[](1);
-        tokens[0] = IERC20(address(0x123));
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](1);
+        tokens[0] = IERC20Upgradeable(address(0x123));
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 1;
         
@@ -577,8 +577,8 @@ contract EigenPodUnitTests_recoverTokens is EigenPodUnitTests {
         EigenPod pod = staker.pod();
         address podOwner = pod.podOwner();
 
-        IERC20[] memory tokens = new IERC20[](1);
-        tokens[0] = IERC20(address(0x123));
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](1);
+        tokens[0] = IERC20Upgradeable(address(0x123));
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 1;
         
@@ -596,8 +596,8 @@ contract EigenPodUnitTests_recoverTokens is EigenPodUnitTests {
         EigenPod pod = staker.pod();
         address podOwner = pod.podOwner();
 
-        IERC20[] memory tokens = new IERC20[](1);
-        tokens[0] = IERC20(address(0x123));
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](1);
+        tokens[0] = IERC20Upgradeable(address(0x123));
         uint256[] memory amounts = new uint256[](2);
         amounts[0] = 1;
         amounts[1] = 1;
@@ -614,12 +614,12 @@ contract EigenPodUnitTests_recoverTokens is EigenPodUnitTests {
         address podOwner = pod.podOwner();
 
         // Deploy dummy token
-        IERC20 dummyToken = new ERC20Mock();
+        IERC20Upgradeable dummyToken = new ERC20Mock();
         dummyToken.transfer(address(pod), 1e18);
 
         // Recover tokens
         address recipient = address(0x123);
-        IERC20[] memory tokens = new IERC20[](1);
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](1);
         tokens[0] = dummyToken;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 1e18;

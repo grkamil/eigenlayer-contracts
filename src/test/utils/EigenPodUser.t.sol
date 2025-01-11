@@ -45,7 +45,7 @@ contract EigenPodUser is Logger {
         beaconChain = deployer.beaconChain();
         eigenPodBeacon = deployer.eigenPodBeacon();
         pod = EigenPod(payable(
-            Create2.deploy(
+            Create2Upgradeable.deploy(
                 0,
                 bytes32(uint256(uint160(address(this)))),
                 // set the beacon address to the eigenPodBeacon

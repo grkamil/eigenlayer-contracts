@@ -208,7 +208,7 @@ interface IDelegationManager_DeprecatedM2 is IPausable, ISignatureUtils {
      */
     function completeQueuedWithdrawal(
         Withdrawal calldata withdrawal,
-        IERC20[] calldata tokens,
+        IERC20Upgradeable[] calldata tokens,
         uint256 middlewareTimesIndex,
         bool receiveAsTokens
     ) external;
@@ -224,7 +224,7 @@ interface IDelegationManager_DeprecatedM2 is IPausable, ISignatureUtils {
      */
     function completeQueuedWithdrawals(
         Withdrawal[] calldata withdrawals,
-        IERC20[][] calldata tokens,
+        IERC20Upgradeable[][] calldata tokens,
         uint256[] calldata middlewareTimesIndexes,
         bool[] calldata receiveAsTokens
     ) external;

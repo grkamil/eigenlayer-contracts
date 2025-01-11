@@ -40,12 +40,12 @@ contract EigenTransferRestrictionsTest is Test {
         proxyAdmin = new ProxyAdmin();
         // initialize with dummy BackingEigen address
         
-        eigenImpl = new EigenHarness(new ERC20PresetFixedSupply({
+        eigenImpl = new EigenHarness(IERC20Upgradeable(address(new ERC20PresetFixedSupply({
             name: "bEIGEN",
             symbol: "bEIGEN",
             initialSupply: totalSupply,
             owner: minter1
-        }));
+        }))));
         eigen = Eigen(address(new TransparentUpgradeableProxy(address(eigenImpl), address(proxyAdmin), "")));
         eigen.bEIGEN().transfer(address(eigen), totalSupply);
         vm.stopPrank();

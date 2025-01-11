@@ -30,7 +30,7 @@ abstract contract OpenZeppelin_Context {
     }
 }
 
-// OpenZeppelin Contracts (last updated v4.6.0) (token/ERC20/IERC20.sol)
+// OpenZeppelin Contracts (last updated v4.6.0) (token/ERC20/IERC20Upgradeable.sol)
 
 // pragma solidity ^0.8.0;
 
@@ -112,7 +112,7 @@ interface OpenZeppelin_IERC20 {
 
 // pragma solidity ^0.8.0;
 
-// import "../IERC20.sol";
+// import "../IERC20Upgradeable.sol";
 
 /**
  * @dev Interface for the optional metadata functions from the ERC20 standard.
@@ -138,12 +138,12 @@ interface OpenZeppelin_IERC20Metadata is OpenZeppelin_IERC20 {
 
 // OpenZeppelin Contracts (last updated v4.8.0) (token/ERC20/ERC20.sol)
 
-// import "./IERC20.sol";
+// import "./IERC20Upgradeable.sol";
 // import "./extensions/IERC20Metadata.sol";
 // import "../../utils/Context.sol";
 
 /**
- * @dev Implementation of the {IERC20} interface.
+ * @dev Implementation of the {IERC20Upgradeable} interface.
  *
  * This implementation is agnostic to the way tokens are created. This means
  * that a supply mechanism has to be added in a derived contract using {_mint}.
@@ -168,7 +168,7 @@ interface OpenZeppelin_IERC20Metadata is OpenZeppelin_IERC20 {
  *
  * Finally, the non-standard {decreaseAllowance} and {increaseAllowance}
  * functions have been added to mitigate the well-known issues around setting
- * allowances. See {IERC20-approve}.
+ * allowances. See {IERC20Upgradeable-approve}.
  */
 contract OpenZeppelin_ERC20 is OpenZeppelin_Context, OpenZeppelin_IERC20, OpenZeppelin_IERC20Metadata {
     mapping(address => uint256) internal _balances;
@@ -217,28 +217,28 @@ contract OpenZeppelin_ERC20 is OpenZeppelin_Context, OpenZeppelin_IERC20, OpenZe
      *
      * NOTE: This information is only used for _display_ purposes: it in
      * no way affects any of the arithmetic of the contract, including
-     * {IERC20-balanceOf} and {IERC20-transfer}.
+     * {IERC20Upgradeable-balanceOf} and {IERC20Upgradeable-transfer}.
      */
     function decimals() public view virtual override returns (uint8) {
         return 18;
     }
 
     /**
-     * @dev See {IERC20-totalSupply}.
+     * @dev See {IERC20Upgradeable-totalSupply}.
      */
     function totalSupply() public view virtual override returns (uint256) {
         return _totalSupply;
     }
 
     /**
-     * @dev See {IERC20-balanceOf}.
+     * @dev See {IERC20Upgradeable-balanceOf}.
      */
     function balanceOf(address account) public view virtual override returns (uint256) {
         return _balances[account];
     }
 
     /**
-     * @dev See {IERC20-transfer}.
+     * @dev See {IERC20Upgradeable-transfer}.
      *
      * Requirements:
      *
@@ -252,14 +252,14 @@ contract OpenZeppelin_ERC20 is OpenZeppelin_Context, OpenZeppelin_IERC20, OpenZe
     }
 
     /**
-     * @dev See {IERC20-allowance}.
+     * @dev See {IERC20Upgradeable-allowance}.
      */
     function allowance(address owner, address spender) public view virtual override returns (uint256) {
         return _allowances[owner][spender];
     }
 
     /**
-     * @dev See {IERC20-approve}.
+     * @dev See {IERC20Upgradeable-approve}.
      *
      * NOTE: If `amount` is the maximum `uint256`, the allowance is not updated on
      * `transferFrom`. This is semantically equivalent to an infinite approval.
@@ -275,7 +275,7 @@ contract OpenZeppelin_ERC20 is OpenZeppelin_Context, OpenZeppelin_IERC20, OpenZe
     }
 
     /**
-     * @dev See {IERC20-transferFrom}.
+     * @dev See {IERC20Upgradeable-transferFrom}.
      *
      * Emits an {Approval} event indicating the updated allowance. This is not
      * required by the EIP. See the note at the beginning of {ERC20}.
@@ -301,7 +301,7 @@ contract OpenZeppelin_ERC20 is OpenZeppelin_Context, OpenZeppelin_IERC20, OpenZe
      * @dev Atomically increases the allowance granted to `spender` by the caller.
      *
      * This is an alternative to {approve} that can be used as a mitigation for
-     * problems described in {IERC20-approve}.
+     * problems described in {IERC20Upgradeable-approve}.
      *
      * Emits an {Approval} event indicating the updated allowance.
      *
@@ -319,7 +319,7 @@ contract OpenZeppelin_ERC20 is OpenZeppelin_Context, OpenZeppelin_IERC20, OpenZe
      * @dev Atomically decreases the allowance granted to `spender` by the caller.
      *
      * This is an alternative to {approve} that can be used as a mitigation for
-     * problems described in {IERC20-approve}.
+     * problems described in {IERC20Upgradeable-approve}.
      *
      * Emits an {Approval} event indicating the updated allowance.
      *

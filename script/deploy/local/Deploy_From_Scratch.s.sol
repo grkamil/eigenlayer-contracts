@@ -358,7 +358,7 @@ contract DeployFromScratch is Script, Test {
                                 StrategyBaseTVLLimits.initialize.selector,
                                 strategyConfigs[i].maxPerDeposit,
                                 strategyConfigs[i].maxDeposits,
-                                IERC20(strategyConfigs[i].tokenAddress)
+                                IERC20Upgradeable(strategyConfigs[i].tokenAddress)
                             )
                         )
                     )

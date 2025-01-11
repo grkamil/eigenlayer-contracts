@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.27;
 
-import "@openzeppelin/contracts/utils/Create2.sol";
+import "@openzeppelin-upgrades/contracts/utils/Create2Upgradeable.sol";
 import "@openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
 import "@openzeppelin-upgrades/contracts/security/ReentrancyGuardUpgradeable.sol";
@@ -30,7 +30,7 @@ contract EigenPodManager is
     ReentrancyGuardUpgradeable
 {
     using SlashingLib for *;
-    using Math for *;
+    using MathUpgradeable for *;
 
     modifier onlyEigenPod(
         address podOwner
@@ -160,7 +160,7 @@ contract EigenPodManager is
     function addShares(
         address staker,
         IStrategy strategy,
-        IERC20,
+        IERC20Upgradeable,
         uint256 shares
     ) external onlyDelegationManager returns (uint256, uint256) {
         require(strategy == beaconChainETHStrategy, InvalidStrategy());
@@ -177,7 +177,7 @@ contract EigenPodManager is
     function withdrawSharesAsTokens(
         address staker,
         IStrategy strategy,
-        IERC20,
+        IERC20Upgradeable,
         uint256 shares
     ) external onlyDelegationManager {
         require(strategy == beaconChainETHStrategy, InvalidStrategy());
@@ -231,7 +231,7 @@ contract EigenPodManager is
         ++numPods;
         // create the pod
         IEigenPod pod = IEigenPod(
-            Create2.deploy(
+            Create2Upgradeable.deploy(
                 0,
                 bytes32(uint256(uint160(msg.sender))),
                 // set the beacon address to the eigenPodBeacon and initialize it
@@ -300,7 +300,7 @@ contract EigenPodManager is
         // if pod does not exist already, calculate what its address *will be* once it is deployed
         if (address(pod) == address(0)) {
             pod = IEigenPod(
-                Create2.computeAddress(
+                Create2Upgradeable.computeAddress(
                     bytes32(uint256(uint160(podOwner))), //salt
                     keccak256(abi.encodePacked(beaconProxyBytecode, abi.encode(eigenPodBeacon, ""))) //bytecode
                 )

@@ -20,7 +20,7 @@ import "src/test/harnesses/DelegationManagerHarness.sol";
 contract DelegationManagerUnitTests is EigenLayerUnitTestSetup, IDelegationManagerEvents, IDelegationManagerErrors {
     using SlashingLib for *; 
     using ArrayLib for *;
-    using Math for *;
+    using MathUpgradeable for *;
 
     /// -----------------------------------------------------------------------
     /// Contracts and Mocks
@@ -30,7 +30,7 @@ contract DelegationManagerUnitTests is EigenLayerUnitTestSetup, IDelegationManag
     DelegationManagerHarness delegationManagerImplementation;
     StrategyBase strategyImplementation;
     StrategyBase strategyMock;
-    IERC20 tokenMock;
+    IERC20Upgradeable tokenMock;
     uint256 tokenMockInitialSupply = 10e50;
 
     /// -----------------------------------------------------------------------
@@ -109,7 +109,7 @@ contract DelegationManagerUnitTests is EigenLayerUnitTestSetup, IDelegationManag
         );
 
         // Deploy mock token and strategy
-        tokenMock = new ERC20PresetFixedSupply("Mock Token", "MOCK", tokenMockInitialSupply, address(this));
+        tokenMock = IERC20Upgradeable(address(new ERC20PresetFixedSupply("Mock Token", "MOCK", tokenMockInitialSupply, address(this))));
         strategyImplementation = new StrategyBase(IStrategyManager(address(strategyManagerMock)), pauserRegistry);
         strategyMock = StrategyBase(
             address(
@@ -441,7 +441,7 @@ contract DelegationManagerUnitTests is EigenLayerUnitTestSetup, IDelegationManag
         uint256 depositAmount,
         uint256 withdrawalAmount,
         bool isBeaconChainStrategy
-    ) internal returns (Withdrawal memory, IERC20[] memory, bytes32) {
+    ) internal returns (Withdrawal memory, IERC20Upgradeable[] memory, bytes32) {
         uint256[] memory depositAmounts = new uint256[](1);
         depositAmounts[0] = depositAmount;
         IStrategy[] memory strategies = _deployAndDepositIntoStrategies(staker, depositAmounts, isBeaconChainStrategy);
@@ -461,7 +461,7 @@ contract DelegationManagerUnitTests is EigenLayerUnitTestSetup, IDelegationManag
         uint256[] memory currentAmounts = uint256(depositAmount - withdrawalAmount).toArrayU256();
         strategyManagerMock.setDeposits(staker, strategies, currentAmounts);
 
-        IERC20[] memory tokens = new IERC20[](strategies.length);
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](strategies.length);
         for (uint i = 0; i < tokens.length; i++) {
             tokens[i] = strategies[i].underlyingToken();
         }
@@ -482,7 +482,7 @@ contract DelegationManagerUnitTests is EigenLayerUnitTestSetup, IDelegationManag
         uint256 numWithdrawals
     ) internal returns (
         Withdrawal[] memory withdrawals, 
-        IERC20[][] memory tokens, 
+        IERC20Upgradeable[][] memory tokens, 
         bytes32[] memory withdrawalRoots
     ) {
         uint256[] memory depositAmounts = new uint256[](1);
@@ -490,7 +490,7 @@ contract DelegationManagerUnitTests is EigenLayerUnitTestSetup, IDelegationManag
         IStrategy[] memory strategies = _deployAndDepositIntoStrategies(staker, depositAmounts, false);
 
         withdrawals = new Withdrawal[](numWithdrawals);
-        tokens = new IERC20[][](numWithdrawals);
+        tokens = new IERC20Upgradeable[][](numWithdrawals);
         withdrawalRoots = new bytes32[](numWithdrawals);
 
         for (uint i = 0; i < numWithdrawals; i++) {
@@ -508,7 +508,7 @@ contract DelegationManagerUnitTests is EigenLayerUnitTestSetup, IDelegationManag
             delegationManager.queueWithdrawals(queuedWithdrawalParams);
 
             withdrawals[i] = withdrawal;
-            tokens[i] = new IERC20[](1);
+            tokens[i] = new IERC20Upgradeable[](1);
             tokens[i][0] = strategies[0].underlyingToken();
             withdrawalRoots[i] = withdrawalRoot;
         }
@@ -535,10 +535,10 @@ contract DelegationManagerUnitTests is EigenLayerUnitTestSetup, IDelegationManag
         uint256[] memory depositAmounts,
         uint256[] memory withdrawalAmounts,
         bool depositBeaconChainShares
-    ) internal returns (Withdrawal memory, IERC20[] memory, bytes32) {
+    ) internal returns (Withdrawal memory, IERC20Upgradeable[] memory, bytes32) {
         IStrategy[] memory strategies = _deployAndDepositIntoStrategies(staker, depositAmounts, depositBeaconChainShares);
 
-        IERC20[] memory tokens = new IERC20[](strategies.length);
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](strategies.length);
         for (uint256 i = 0; i < strategies.length; i++) {
             tokens[i] = strategies[i].underlyingToken();
         }
@@ -751,7 +751,7 @@ contract DelegationManagerUnitTests is EigenLayerUnitTestSetup, IDelegationManag
 
     struct CompleteQueuedWithdrawalEmitStruct {
         Withdrawal withdrawal;
-        IERC20[] tokens;
+        IERC20Upgradeable[] tokens;
         bool receiveAsTokens;
     }
 
@@ -811,7 +811,7 @@ contract DelegationManagerUnitTests is EigenLayerUnitTestSetup, IDelegationManag
 
     struct CompleteQueuedWithdrawalsEmitStruct {
         Withdrawal[] withdrawals;
-        IERC20[][] tokens;
+        IERC20Upgradeable[][] tokens;
         bool[] receiveAsTokens;
     }
 
@@ -894,7 +894,7 @@ contract DelegationManagerUnitTests is EigenLayerUnitTestSetup, IDelegationManag
         uint64 prevMaxMagnitude,
         uint64 newMaxMagnitude
     ) internal pure returns (uint256 slashedAmount, uint256 operatorSharesAfterSlash) {
-        operatorSharesAfterSlash = operatorShares.mulDiv(newMaxMagnitude, prevMaxMagnitude, Math.Rounding.Up);
+        operatorSharesAfterSlash = operatorShares.mulDiv(newMaxMagnitude, prevMaxMagnitude, MathUpgradeable.Rounding.Up);
         slashedAmount = operatorShares - operatorSharesAfterSlash;
     }
 
@@ -3077,7 +3077,7 @@ contract DelegationManagerUnitTests_delegateTo is DelegationManagerUnitTests {
 contract DelegationManagerUnitTests_increaseDelegatedShares is DelegationManagerUnitTests {
     using ArrayLib for *;
     using SlashingLib for *;
-    using Math for *;
+    using MathUpgradeable for *;
 
     /// @notice Verifies that `DelegationManager.increaseDelegatedShares` reverts if not called by the StrategyManager nor EigenPodManager
     function testFuzz_Revert_increaseDelegatedShares_invalidCaller(Randomness r) public rand(r) {
@@ -3570,7 +3570,7 @@ contract DelegationManagerUnitTests_increaseDelegatedShares is DelegationManager
 contract DelegationManagerUnitTests_decreaseDelegatedShares is DelegationManagerUnitTests {
     using ArrayLib for *;
     using SlashingLib for *;
-    using Math for *;
+    using MathUpgradeable for *;
 
     function testFuzz_Revert_decreaseDelegatedShares_invalidCaller(Randomness r) public rand(r) {
         address invalidCaller = r.Address();
@@ -3858,7 +3858,7 @@ contract DelegationManagerUnitTests_decreaseDelegatedShares is DelegationManager
 contract DelegationManagerUnitTests_undelegate is DelegationManagerUnitTests {
     using SlashingLib for uint256;
     using ArrayLib for *;
-    using Math for uint256;
+    using MathUpgradeable for uint256;
 
     // @notice Verifies that undelegating is not possible when the "undelegation paused" switch is flipped
     function testFuzz_Revert_undelegate_paused(Randomness r) public rand(r) {
@@ -4627,8 +4627,8 @@ contract DelegationManagerUnitTests_undelegate is DelegationManagerUnitTests {
         // // Re-delegate the staker to the operator again. The shares should have increased but may be less than from before due to rounding
         _delegateToOperatorWhoAcceptsAllStakers(defaultStaker, defaultOperator);
         // complete withdrawal as shares, should add back delegated shares to operator due to delegating again
-        IERC20[] memory tokens = new IERC20[](1);
-        tokens[0] = IERC20(strategyMock.underlyingToken());
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](1);
+        tokens[0] = IERC20Upgradeable(strategyMock.underlyingToken());
         cheats.roll(withdrawal.startBlock + delegationManager.minWithdrawalDelayBlocks() + 1);
         cheats.prank(defaultStaker);
         delegationManager.completeQueuedWithdrawal(withdrawal, tokens, false);
@@ -4931,10 +4931,10 @@ contract DelegationManagerUnitTests_redelegate is DelegationManagerUnitTests {
         // 4. Delegate to operator again with shares added back
         {
             cheats.roll(block.number + delegationManager.minWithdrawalDelayBlocks() + 1);
-            IERC20[] memory strategyTokens = new IERC20[](1);
-            strategyTokens[0] = IERC20(strategyMock.underlyingToken());
-            IERC20[] memory beaconTokens = new IERC20[](1);
-            beaconTokens[0] = IERC20(address(beaconChainETHStrategy));
+            IERC20Upgradeable[] memory strategyTokens = new IERC20Upgradeable[](1);
+            strategyTokens[0] = IERC20Upgradeable(strategyMock.underlyingToken());
+            IERC20Upgradeable[] memory beaconTokens = new IERC20Upgradeable[](1);
+            beaconTokens[0] = IERC20Upgradeable(address(beaconChainETHStrategy));
             if (completeAsShares) {
                 // delegate first and complete withdrawal
                 _delegateToOperatorWhoAcceptsAllStakers(staker, operator);
@@ -5803,7 +5803,7 @@ contract DelegationManagerUnitTests_queueWithdrawals is DelegationManagerUnitTes
 contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManagerUnitTests {
     using ArrayLib for *;
     using SlashingLib for *;
-    using Math for uint256;
+    using MathUpgradeable for uint256;
 
     function test_Revert_WhenExitWithdrawalQueuePaused() public {
         cheats.prank(pauser);
@@ -5811,7 +5811,7 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
         _registerOperatorWithBaseDetails(defaultOperator);
         (
             Withdrawal memory withdrawal,
-            IERC20[] memory tokens,
+            IERC20Upgradeable[] memory tokens,
             /* bytes32 withdrawalRoot */
         ) = _setUpCompleteQueuedWithdrawalSingleStrat({
             staker: defaultStaker,
@@ -5825,7 +5825,7 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
         cheats.expectRevert(IPausable.CurrentlyPaused.selector);
         delegationManager.completeQueuedWithdrawal(withdrawal, tokens,  false);
 
-        IERC20[][] memory tokensArray = new IERC20[][](1);
+        IERC20Upgradeable[][] memory tokensArray = new IERC20Upgradeable[][](1);
         tokensArray[0] = tokens;
 
         bool[] memory receiveAsTokens = new bool[](1);
@@ -5843,7 +5843,7 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
         _registerOperatorWithBaseDetails(defaultOperator);
         (
             Withdrawal memory withdrawal,
-            IERC20[] memory tokens,
+            IERC20Upgradeable[] memory tokens,
             /* bytes32 withdrawalRoot */
         ) = _setUpCompleteQueuedWithdrawalSingleStrat({
             staker: defaultStaker,
@@ -5857,7 +5857,7 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
         cheats.roll(withdrawal.startBlock + delegationManager.minWithdrawalDelayBlocks() + 1);
 
         // resize tokens array
-        IERC20[] memory newTokens = new IERC20[](0);
+        IERC20Upgradeable[] memory newTokens = new IERC20Upgradeable[](0);
 
         cheats.prank(defaultStaker);
         cheats.expectRevert(InputArrayLengthMismatch.selector);
@@ -5874,7 +5874,7 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
         _registerOperatorWithBaseDetails(defaultOperator);
         (
             Withdrawal memory withdrawal,
-            IERC20[] memory tokens,
+            IERC20Upgradeable[] memory tokens,
         ) = _setUpCompleteQueuedWithdrawalSingleStrat({
             staker: defaultStaker,
             depositAmount: 100,
@@ -5892,7 +5892,7 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
         _registerOperatorWithBaseDetails(defaultOperator);
         (
             Withdrawal memory withdrawal,
-            IERC20[] memory tokens,
+            IERC20Upgradeable[] memory tokens,
             bytes32 withdrawalRoot
         ) = _setUpCompleteQueuedWithdrawalSingleStrat({
             staker: defaultStaker,
@@ -5930,7 +5930,7 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
         _registerOperatorWithBaseDetails(defaultOperator);
         (
             Withdrawal memory withdrawal,
-            IERC20[] memory tokens,
+            IERC20Upgradeable[] memory tokens,
             /* bytes32 withdrawalRoot */
         ) = _setUpCompleteQueuedWithdrawal({
             staker: defaultStaker,
@@ -5980,7 +5980,7 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
 
         // Complete withdrawal as shares and assert that operator has no shares increased
         cheats.roll(block.number + 1);
-        IERC20[] memory tokens = strategyMock.underlyingToken().toArray();
+        IERC20Upgradeable[] memory tokens = strategyMock.underlyingToken().toArray();
         cheats.expectRevert(FullySlashed.selector);
         cheats.prank(defaultStaker);
         delegationManager.completeQueuedWithdrawal(withdrawal, tokens, false);
@@ -5997,7 +5997,7 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
 
         (
             Withdrawal[] memory withdrawals,
-            IERC20[][] memory tokens,
+            IERC20Upgradeable[][] memory tokens,
             bytes32[] memory withdrawalRoots
         ) = _setUpCompleteQueuedWithdrawalsSingleStrat({
             staker: staker,
@@ -6091,7 +6091,7 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
         _registerOperatorWithBaseDetails(defaultOperator);
         (
             Withdrawal memory withdrawal,
-            IERC20[] memory tokens,
+            IERC20Upgradeable[] memory tokens,
             bytes32 withdrawalRoot
         ) = _setUpCompleteQueuedWithdrawalSingleStrat({
             staker: defaultStaker,
@@ -6211,8 +6211,8 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
         ) = delegationManager.getWithdrawableShares(defaultStaker, withdrawal.strategies);
         uint256 operatorSharesBefore = delegationManager.operatorShares(defaultOperator, strategyMock);
         {
-            IERC20[] memory tokens = new IERC20[](1);
-            tokens[0] = IERC20(strategyMock.underlyingToken());
+            IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](1);
+            tokens[0] = IERC20Upgradeable(strategyMock.underlyingToken());
             cheats.roll(withdrawal.startBlock + delegationManager.minWithdrawalDelayBlocks() + 1);
             _completeQueuedWithdrawal_expectEmit(
                 CompleteQueuedWithdrawalEmitStruct({
@@ -6318,7 +6318,7 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
         uint256 operatorSharesBefore = delegationManager.operatorShares(defaultOperator, beaconChainETHStrategy);
 
         {
-            IERC20[] memory tokens = new IERC20[](1);
+            IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](1);
             cheats.roll(withdrawal.startBlock + delegationManager.minWithdrawalDelayBlocks() + 1);
             _completeQueuedWithdrawal_expectEmit(
                 CompleteQueuedWithdrawalEmitStruct({
@@ -6414,7 +6414,7 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
             uint256[] memory depositShares
         ) = delegationManager.getWithdrawableShares(defaultStaker, beaconChainETHStrategy.toArray());
         uint256 operatorSharesBefore = delegationManager.operatorShares(defaultOperator, beaconChainETHStrategy);
-        IERC20[] memory tokens = new IERC20[](1);
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](1);
         cheats.roll(withdrawal.startBlock + delegationManager.minWithdrawalDelayBlocks() + 1);
         _completeQueuedWithdrawal_expectEmit(
             CompleteQueuedWithdrawalEmitStruct({
@@ -6462,7 +6462,7 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
 
         (
             Withdrawal memory withdrawal,
-            IERC20[] memory tokens,
+            IERC20Upgradeable[] memory tokens,
             bytes32 withdrawalRoot
         ) = _setUpCompleteQueuedWithdrawalSingleStrat({
             staker: staker,
@@ -6541,7 +6541,7 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
         cheats.roll(startBlock + 3);
         delegationManager.queueWithdrawals(queuedParams[3].toArray());
 
-        IERC20[][] memory tokens = new IERC20[][](2);
+        IERC20Upgradeable[][] memory tokens = new IERC20Upgradeable[][](2);
         for (uint256 i; i < 2; ++i) {
             tokens[i] = strategyMock.underlyingToken().toArray();
         }
@@ -6575,7 +6575,7 @@ contract DelegationManagerUnitTests_completeQueuedWithdrawal is DelegationManage
 contract DelegationManagerUnitTests_slashingShares is DelegationManagerUnitTests {
     using ArrayLib for *;
     using SlashingLib for *;
-    using Math for *;
+    using MathUpgradeable for *;
 
     /// @notice Verifies that `DelegationManager.slashOperatorShares` reverts if not called by the AllocationManager
     function testFuzz_Revert_slashOperatorShares_invalidCaller(Randomness r) public rand(r) {
@@ -6633,7 +6633,7 @@ contract DelegationManagerUnitTests_slashingShares is DelegationManagerUnitTests
 
         // Complete withdrawal as tokens and assert that nothing is returned
         cheats.roll(block.number + 1);
-        IERC20[] memory tokens = strategyMock.underlyingToken().toArray();
+        IERC20Upgradeable[] memory tokens = strategyMock.underlyingToken().toArray();
         cheats.expectCall(
             address(strategyManagerMock),
             abi.encodeWithSelector(
@@ -6694,7 +6694,7 @@ contract DelegationManagerUnitTests_slashingShares is DelegationManagerUnitTests
         delegationManager.slashOperatorShares(defaultOperator, strategyMock, WAD, 0);
 
         // Complete withdrawal as tokens and assert that we call back into teh SM with 100 tokens
-        IERC20[] memory tokens = strategyMock.underlyingToken().toArray();
+        IERC20Upgradeable[] memory tokens = strategyMock.underlyingToken().toArray();
         cheats.expectCall(
             address(strategyManagerMock),
             abi.encodeWithSelector(
@@ -7355,7 +7355,7 @@ contract DelegationManagerUnitTests_slashingShares is DelegationManagerUnitTests
             );
             // Check slashable shares in queue before and when the withdrawal is completable
             completableBlock = withdrawal.startBlock + delegationManager.minWithdrawalDelayBlocks() + 1;
-            IERC20[] memory tokenArray = strategyMock.underlyingToken().toArray();
+            IERC20Upgradeable[] memory tokenArray = strategyMock.underlyingToken().toArray();
 
             // 3.2 roll to right before withdrawal is completable, check that slashable shares are still there
             // attempting to complete a withdrawal should revert

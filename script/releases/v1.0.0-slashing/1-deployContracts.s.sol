@@ -6,7 +6,7 @@ import "../Env.sol";
 
 import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin-upgrades/contracts/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 /**
@@ -477,11 +477,11 @@ contract Deploy is EOADeployer {
 
             StrategyBase strategyBase = Env.impl.strategyBase();
             vm.expectRevert(errInit);
-            strategyBase.initialize(IERC20(address(0)));
+            strategyBase.initialize(IERC20Upgradeable(address(0)));
 
             StrategyBaseTVLLimits strategyBaseTVLLimits = Env.impl.strategyBaseTVLLimits();
             vm.expectRevert(errInit);
-            strategyBaseTVLLimits.initialize(0, 0, IERC20(address(0)));
+            strategyBaseTVLLimits.initialize(0, 0, IERC20Upgradeable(address(0)));
 
             StrategyFactory strategyFactory = Env.impl.strategyFactory();
             vm.expectRevert(errInit);

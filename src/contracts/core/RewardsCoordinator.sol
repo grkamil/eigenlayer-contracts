@@ -4,7 +4,7 @@ pragma solidity ^0.8.27;
 import "@openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
 import "@openzeppelin-upgrades/contracts/security/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin-upgrades/contracts/token/ERC20/utils/SafeERC20Upgradeable.sol";
 
 import "../libraries/Merkle.sol";
 import "../permissions/Pausable.sol";
@@ -28,7 +28,7 @@ contract RewardsCoordinator is
     RewardsCoordinatorStorage,
     PermissionControllerMixin
 {
-    using SafeERC20 for IERC20;
+    using SafeERC20Upgradeable for IERC20Upgradeable;
 
     modifier onlyRewardsUpdater() {
         require(msg.sender == rewardsUpdater, UnauthorizedCaller());
@@ -488,7 +488,7 @@ contract RewardsCoordinator is
 
     /**
      * @notice verify inclusion of the token claim proof in the earner token root hash (earnerTokenRoot).
-     * The token leaf comprises of the IERC20 token and cumulativeAmount of earnings.
+     * The token leaf comprises of the IERC20Upgradeable token and cumulativeAmount of earnings.
      * @param earnerTokenRoot root hash of the earner token subtree
      * @param tokenLeafIndex index of the token leaf
      * @param tokenProof proof of the token leaf in the earner token subtree

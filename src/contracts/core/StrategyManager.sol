@@ -4,7 +4,7 @@ pragma solidity ^0.8.27;
 import "@openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
 import "@openzeppelin-upgrades/contracts/security/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin-upgrades/contracts/token/ERC20/utils/SafeERC20Upgradeable.sol";
 
 import "../mixins/SignatureUtils.sol";
 import "../interfaces/IEigenPodManager.sol";
@@ -29,7 +29,7 @@ contract StrategyManager is
     SignatureUtils
 {
     using SlashingLib for *;
-    using SafeERC20 for IERC20;
+    using SafeERC20Upgradeable for IERC20Upgradeable;
 
     modifier onlyStrategyWhitelister() {
         require(msg.sender == strategyWhitelister, OnlyStrategyWhitelister());
@@ -79,7 +79,7 @@ contract StrategyManager is
     /// @inheritdoc IStrategyManager
     function depositIntoStrategy(
         IStrategy strategy,
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 amount
     ) external onlyWhenNotPaused(PAUSED_DEPOSITS) nonReentrant returns (uint256 depositedShares) {
         depositedShares = _depositIntoStrategy(msg.sender, strategy, token, amount);
@@ -88,7 +88,7 @@ contract StrategyManager is
     /// @inheritdoc IStrategyManager
     function depositIntoStrategyWithSignature(
         IStrategy strategy,
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 amount,
         address staker,
         uint256 expiry,
@@ -124,7 +124,7 @@ contract StrategyManager is
     function addShares(
         address staker,
         IStrategy strategy,
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 shares
     ) external onlyDelegationManager returns (uint256, uint256) {
         return _addShares(staker, token, strategy, shares);
@@ -134,7 +134,7 @@ contract StrategyManager is
     function withdrawSharesAsTokens(
         address staker,
         IStrategy strategy,
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 shares
     ) external onlyDelegationManager {
         strategy.withdraw(staker, token, shares);
@@ -206,7 +206,7 @@ contract StrategyManager is
      */
     function _addShares(
         address staker,
-        IERC20 token,
+        IERC20Upgradeable token,
         IStrategy strategy,
         uint256 shares
     ) internal returns (uint256, uint256) {
@@ -241,7 +241,7 @@ contract StrategyManager is
     function _depositIntoStrategy(
         address staker,
         IStrategy strategy,
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 amount
     ) internal onlyStrategiesWhitelistedForDeposit(strategy) returns (uint256 shares) {
         // transfer tokens from the sender to the strategy
@@ -367,7 +367,7 @@ contract StrategyManager is
     function calculateStrategyDepositDigestHash(
         address staker,
         IStrategy strategy,
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 amount,
         uint256 nonce,
         uint256 expiry

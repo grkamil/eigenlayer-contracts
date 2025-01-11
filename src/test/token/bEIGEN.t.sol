@@ -35,8 +35,8 @@ contract bEIGENTest is Test {
         bEIGEN = BackingEigen(address(new TransparentUpgradeableProxy(address(proxyAdmin), address(proxyAdmin), "")));
 
         // deploy impls
-        eigenImpl = new EigenHarness(IERC20(address(bEIGEN)));
-        bEIGENImpl = new BackingEigen(IERC20(address(eigen)));
+        eigenImpl = new EigenHarness(IERC20Upgradeable(address(bEIGEN)));
+        bEIGENImpl = new BackingEigen(IERC20Upgradeable(address(eigen)));
 
         // upgrade proxies
         proxyAdmin.upgrade(ITransparentUpgradeableProxy(payable(address(eigen))), address(eigenImpl));

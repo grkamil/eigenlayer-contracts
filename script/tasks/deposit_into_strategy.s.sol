@@ -36,14 +36,14 @@ contract DepositIntoStrategy is Script, Test {
         // START RECORDING TRANSACTIONS FOR DEPLOYMENT
         vm.startBroadcast();
 
-        IERC20 tkn = IERC20(token);
+        IERC20Upgradeable tkn = IERC20Upgradeable(token);
         StrategyManager sm = StrategyManager(strategyManager);
 
         // approve spend
         tkn.approve(strategyManager, amount);
 
         // do deposit
-        sm.depositIntoStrategy(IStrategy(strategy), IERC20(token), amount);
+        sm.depositIntoStrategy(IStrategy(strategy), IERC20Upgradeable(token), amount);
         
         vm.stopBroadcast();
     }

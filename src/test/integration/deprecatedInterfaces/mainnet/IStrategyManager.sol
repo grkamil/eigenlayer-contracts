@@ -25,7 +25,7 @@ interface IStrategyManager_DeprecatedM2 {
      * WARNING: Depositing tokens that allow reentrancy (eg. ERC-777) into a strategy is not recommended.  This can lead to attack vectors
      *          where the token balance and corresponding strategy shares are not in sync upon reentrancy.
      */
-    function depositIntoStrategy(IStrategy strategy, IERC20 token, uint256 amount) external returns (uint256 shares);
+    function depositIntoStrategy(IStrategy strategy, IERC20Upgradeable token, uint256 amount) external returns (uint256 shares);
 
     /**
      * @notice Used for depositing an asset into the specified strategy with the resultant shares credited to `staker`,
@@ -50,7 +50,7 @@ interface IStrategyManager_DeprecatedM2 {
      */
     function depositIntoStrategyWithSignature(
         IStrategy strategy,
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 amount,
         address staker,
         uint256 expiry,
@@ -61,10 +61,10 @@ interface IStrategyManager_DeprecatedM2 {
     function removeShares(address staker, IStrategy strategy, uint256 shares) external;
 
     /// @notice Used by the DelegationManager to award a Staker some shares that have passed through the withdrawal queue
-    function addShares(address staker, IERC20 token, IStrategy strategy, uint256 shares) external;
+    function addShares(address staker, IERC20Upgradeable token, IStrategy strategy, uint256 shares) external;
 
     /// @notice Used by the DelegationManager to convert withdrawn shares to tokens and send them to a recipient
-    function withdrawSharesAsTokens(address recipient, IStrategy strategy, uint256 shares, IERC20 token) external;
+    function withdrawSharesAsTokens(address recipient, IStrategy strategy, uint256 shares, IERC20Upgradeable token) external;
 
     /// @notice Returns the current shares of `user` in `strategy`
     function stakerStrategyShares(address user, IStrategy strategy) external view returns (uint256 shares);
@@ -182,7 +182,7 @@ interface IStrategyManager_DeprecatedM1 {
      * WARNING: Depositing tokens that allow reentrancy (eg. ERC-777) into a strategy is not recommended.  This can lead to attack vectors
      *          where the token balance and corresponding strategy shares are not in sync upon reentrancy.
      */
-    function depositIntoStrategy(IStrategy strategy, IERC20 token, uint256 amount)
+    function depositIntoStrategy(IStrategy strategy, IERC20Upgradeable token, uint256 amount)
         external
         returns (uint256 shares);
 
@@ -228,7 +228,7 @@ interface IStrategyManager_DeprecatedM1 {
      */
     function depositIntoStrategyWithSignature(
         IStrategy strategy,
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 amount,
         address staker,
         uint256 expiry,
@@ -296,7 +296,7 @@ interface IStrategyManager_DeprecatedM1 {
      */
     function completeQueuedWithdrawal(
         QueuedWithdrawal calldata queuedWithdrawal,
-        IERC20[] calldata tokens,
+        IERC20Upgradeable[] calldata tokens,
         uint256 middlewareTimesIndex,
         bool receiveAsTokens
     )
@@ -315,7 +315,7 @@ interface IStrategyManager_DeprecatedM1 {
      */
     function completeQueuedWithdrawals(
         QueuedWithdrawal[] calldata queuedWithdrawals,
-        IERC20[][] calldata tokens,
+        IERC20Upgradeable[][] calldata tokens,
         uint256[] calldata middlewareTimesIndexes,
         bool[] calldata receiveAsTokens
     )
@@ -341,7 +341,7 @@ interface IStrategyManager_DeprecatedM1 {
         address slashedAddress,
         address recipient,
         IStrategy[] calldata strategies,
-        IERC20[] calldata tokens,
+        IERC20Upgradeable[] calldata tokens,
         uint256[] calldata strategyIndexes,
         uint256[] calldata shareAmounts
     )
@@ -357,7 +357,7 @@ interface IStrategyManager_DeprecatedM1 {
      * so that, e.g., if the slashed QueuedWithdrawal contains a malicious strategy in the `strategies` array which always reverts on calls to its 'withdraw' function,
      * then the malicious strategy can be skipped (with the shares in effect "burned"), while the non-malicious strategies are still called as normal.
      */
-    function slashQueuedWithdrawal(address recipient, QueuedWithdrawal calldata queuedWithdrawal, IERC20[] calldata tokens, uint256[] calldata indicesToSkip)
+    function slashQueuedWithdrawal(address recipient, QueuedWithdrawal calldata queuedWithdrawal, IERC20Upgradeable[] calldata tokens, uint256[] calldata indicesToSkip)
         external;
 
     /// @notice Returns the keccak256 hash of `queuedWithdrawal`.

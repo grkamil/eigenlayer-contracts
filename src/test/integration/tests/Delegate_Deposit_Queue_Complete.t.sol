@@ -80,7 +80,7 @@ contract Integration_Delegate_Deposit_Queue_Complete is IntegrationCheckUtils {
         _rollBlocksForCompleteWithdrawals(withdrawals);
         for (uint i = 0; i < withdrawals.length; i++) {
             uint[] memory expectedTokens = _calculateExpectedTokens(strategies, shares);
-            IERC20[] memory tokens = staker.completeWithdrawalAsTokens(withdrawals[i]);
+            IERC20Upgradeable[] memory tokens = staker.completeWithdrawalAsTokens(withdrawals[i]);
             check_Withdrawal_AsTokens_State(staker, operator, withdrawals[i], strategies, shares, tokens, expectedTokens);
         }
     }

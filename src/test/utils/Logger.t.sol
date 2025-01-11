@@ -9,7 +9,7 @@ import {IAllocationManagerTypes} from "src/contracts/interfaces/IAllocationManag
 Vm constant cheats = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
 IStrategy constant BEACONCHAIN_ETH_STRAT = IStrategy(0xbeaC0eeEeeeeEEeEeEEEEeeEEeEeeeEeeEEBEaC0);
-IERC20 constant NATIVE_ETH = IERC20(0xbeaC0eeEeeeeEEeEeEEEEeeEEeEeeeEeeEEBEaC0);
+IERC20Upgradeable constant NATIVE_ETH = IERC20Upgradeable(0xbeaC0eeEeeeeEEeEeEEEEeeEEeEeeeEeeEEBEaC0);
 
 uint256 constant MIN_BALANCE = 1e6;
 uint256 constant MAX_BALANCE = 5e6;
@@ -158,7 +158,7 @@ library print {
             if (strat == BEACONCHAIN_ETH_STRAT) {
                 console.log("       Native ETH: %s", print.asWad(tokenBalances[i]));
             } else {
-                IERC20 underlyingToken = strat.underlyingToken();
+                IERC20Upgradeable underlyingToken = strat.underlyingToken();
                 console.log(
                     "       %s: %s", IERC20Metadata(address(underlyingToken)).name(), print.asGwei(tokenBalances[i])
                 );

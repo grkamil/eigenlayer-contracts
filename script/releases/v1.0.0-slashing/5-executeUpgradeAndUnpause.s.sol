@@ -251,7 +251,7 @@ contract Execute is QueueAndUnpause, Pause {
                 emit log_named_address("strat", address(strategy));
 
                 vm.expectRevert(errInit);
-                strategy.initialize(0, 0, IERC20(address(0)));
+                strategy.initialize(0, 0, IERC20Upgradeable(address(0)));
                 assertTrue(strategy.maxPerDeposit() == type(uint).max, "stratTVLLim.maxPerDeposit invalid");
                 assertTrue(strategy.maxTotalDeposits() == type(uint).max, "stratTVLLim.maxPerDeposit invalid");
             }

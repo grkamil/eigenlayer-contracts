@@ -22,7 +22,7 @@ contract StrategyManagerUnitTests is EigenLayerUnitTestSetup, IStrategyManagerEv
     StrategyManager public strategyManagerImplementation;
     StrategyManager public strategyManager;
 
-    IERC20 public dummyToken;
+    IERC20Upgradeable public dummyToken;
     ERC20_SetTransferReverting_Mock public revertToken;
     StrategyBase public dummyStrat;
     StrategyBase public dummyStrat2;
@@ -54,12 +54,12 @@ contract StrategyManagerUnitTests is EigenLayerUnitTestSetup, IStrategyManagerEv
                 )
             )
         );
-        dummyToken = new ERC20PresetFixedSupply(
+        dummyToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply(
             "mock token",
             "MOCK",
             MAX_STRATEGY_TOTAL_SHARES,
             address(this)
-        );
+        )));
         revertToken = new ERC20_SetTransferReverting_Mock(1000e18, address(this));
         revertToken.setTransfersRevert(true);
         dummyStrat = _deployNewStrategy(dummyToken, strategyManager, pauserRegistry, dummyAdmin);
@@ -83,7 +83,7 @@ contract StrategyManagerUnitTests is EigenLayerUnitTestSetup, IStrategyManagerEv
 
     // INTERNAL / HELPER FUNCTIONS
     function _deployNewStrategy(
-        IERC20 _token,
+        IERC20Upgradeable _token,
         IStrategyManager _strategyManager,
         IPauserRegistry _pauserRegistry,
         address admin
@@ -99,7 +99,7 @@ contract StrategyManagerUnitTests is EigenLayerUnitTestSetup, IStrategyManagerEv
         address staker,
         uint256 amount
     ) internal filterFuzzedAddressInputs(staker) {
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
 
         // filter out zero case since it will revert with "StrategyManager._addShares: shares should not be zero!"
         cheats.assume(amount != 0);
@@ -271,7 +271,7 @@ contract StrategyManagerUnitTests_depositIntoStrategy is StrategyManagerUnitTest
         address staker,
         uint256 amount
     ) public filterFuzzedAddressInputs(staker) {
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
         IStrategy strategy = dummyStrat;
 
         // filter out zero case since it will revert with "StrategyManager._addShares: shares should not be zero!"
@@ -357,9 +357,9 @@ contract StrategyManagerUnitTests_depositIntoStrategy is StrategyManagerUnitTest
     //         cheats.createSelectFork("https://eth.llamarpc.com");
     //     }
 
-    //     // cast mainnet stETH address to IERC20 interface
-    //     // IERC20 steth = IERC20(0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84);
-    //     IERC20 underlyingToken = IERC20(0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84);
+    //     // cast mainnet stETH address to IERC20Upgradeable interface
+    //     // IERC20Upgradeable steth = IERC20Upgradeable(0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84);
+    //     IERC20Upgradeable underlyingToken = IERC20Upgradeable(0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84);
 
     //     // deploy necessary contracts on the shadow-forked network
     //     // deploy proxy admin for ability to upgrade proxy contracts
@@ -583,13 +583,13 @@ contract StrategyManagerUnitTests_depositIntoStrategy is StrategyManagerUnitTest
     // function testDepositTokenWithOneWeiFeeOnTransfer(address sender, uint64 amountToDeposit) public fuzzedAddress(sender) {
     //     cheats.assume(amountToDeposit != 0);
 
-    //     IERC20 underlyingToken;
+    //     IERC20Upgradeable underlyingToken;
 
     //     {
     //         uint256 initSupply = 1e50;
     //         address initOwner = address(this);
     //         ERC20_OneWeiFeeOnTransfer oneWeiFeeOnTransferToken = new ERC20_OneWeiFeeOnTransfer(initSupply, initOwner);
-    //         underlyingToken = IERC20(address(oneWeiFeeOnTransferToken));
+    //         underlyingToken = IERC20Upgradeable(address(oneWeiFeeOnTransferToken));
     //     }
 
     //     // need to transfer extra here because otherwise the `sender` won't have enough tokens
@@ -692,7 +692,7 @@ contract StrategyManagerUnitTests_depositIntoStrategy is StrategyManagerUnitTest
 
     function test_Revert_WhenTokenSafeTransferFromReverts() external {
         // replace 'dummyStrat' with one that uses a reverting token
-        dummyToken = IERC20(address(new ReverterWithDecimals()));
+        dummyToken = IERC20Upgradeable(address(new ReverterWithDecimals()));
         dummyStrat = _deployNewStrategy(dummyToken, strategyManager, pauserRegistry, dummyAdmin);
 
         // whitelist the strategy for deposit
@@ -702,7 +702,7 @@ contract StrategyManagerUnitTests_depositIntoStrategy is StrategyManagerUnitTest
         strategyManager.addStrategiesToDepositWhitelist(_strategy);
 
         address staker = address(this);
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
         uint256 amount = 1e18;
         IStrategy strategy = dummyStrat;
 
@@ -713,7 +713,7 @@ contract StrategyManagerUnitTests_depositIntoStrategy is StrategyManagerUnitTest
 
     function test_Revert_WhenTokenDoesNotExist() external {
         // replace 'dummyStrat' with one that uses a non-existent token, but will pass the initializer decimals check
-        dummyToken = IERC20(address(new MockDecimals()));
+        dummyToken = IERC20Upgradeable(address(new MockDecimals()));
         dummyStrat = _deployNewStrategy(dummyToken, strategyManager, pauserRegistry, dummyAdmin);
 
         // whitelist the strategy for deposit
@@ -723,12 +723,12 @@ contract StrategyManagerUnitTests_depositIntoStrategy is StrategyManagerUnitTest
         strategyManager.addStrategiesToDepositWhitelist(_strategy);
 
         address staker = address(this);
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
         uint256 amount = 1e18;
         IStrategy strategy = dummyStrat;
 
         cheats.prank(staker);
-        cheats.expectRevert("SafeERC20: low-level call failed");
+        cheats.expectRevert("SafeERC20Upgradeable: low-level call failed");
         strategyManager.depositIntoStrategy(strategy, token, amount);
     }
 
@@ -744,7 +744,7 @@ contract StrategyManagerUnitTests_depositIntoStrategy is StrategyManagerUnitTest
 
         address staker = address(this);
         dummyToken.approve(address(strategyManager), MAX_STRATEGY_TOTAL_SHARES);
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
         uint256 amount = 1e18;
         IStrategy strategy = dummyStrat;
 
@@ -764,7 +764,7 @@ contract StrategyManagerUnitTests_depositIntoStrategy is StrategyManagerUnitTest
         strategyManager.addStrategiesToDepositWhitelist(_strategy);
 
         address staker = address(this);
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
         uint256 amount = 1e18;
         IStrategy strategy = dummyStrat;
 
@@ -778,7 +778,7 @@ contract StrategyManagerUnitTests_depositIntoStrategy is StrategyManagerUnitTest
         dummyStrat = _deployNewStrategy(dummyToken, strategyManager, pauserRegistry, dummyAdmin);
 
         address staker = address(this);
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
         uint256 amount = 1e18;
         IStrategy strategy = dummyStrat;
 
@@ -801,7 +801,7 @@ contract StrategyManagerUnitTests_depositIntoStrategy is StrategyManagerUnitTest
         address staker = address(this);
         dummyToken.approve(address(strategyManager), MAX_STRATEGY_TOTAL_SHARES);
         IStrategy strategy = dummyStrat;
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
         uint256 amount = 1e18;
 
         reenterer.prepareReturnData(abi.encode(uint256(0)));
@@ -816,7 +816,7 @@ contract StrategyManagerUnitTests_depositIntoStrategyWithSignature is StrategyMa
     function test_Revert_WhenSignatureInvalid() public {
         address staker = cheats.addr(privateKey);
         IStrategy strategy = dummyStrat;
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
         uint256 amount = 1e18;
 
         uint256 nonceBefore = strategyManager.nonces(staker);
@@ -877,7 +877,7 @@ contract StrategyManagerUnitTests_depositIntoStrategyWithSignature is StrategyMa
 
         address staker = cheats.addr(privateKey);
         IStrategy strategy = dummyStrat;
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
 
         // deploy ERC1271WalletMock for staker to use
         cheats.prank(staker);
@@ -922,7 +922,7 @@ contract StrategyManagerUnitTests_depositIntoStrategyWithSignature is StrategyMa
 
         address staker = cheats.addr(privateKey);
         IStrategy strategy = dummyStrat;
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
 
         // deploy ERC1271WalletMock for staker to use
         cheats.prank(staker);
@@ -961,7 +961,7 @@ contract StrategyManagerUnitTests_depositIntoStrategyWithSignature is StrategyMa
         }
 
         cheats.expectRevert("ERC20: insufficient allowance");
-        strategyManager.depositIntoStrategyWithSignature(dummyStrat, revertToken, amount, staker, expiry, signature);
+        strategyManager.depositIntoStrategyWithSignature(dummyStrat, IERC20Upgradeable(address(revertToken)), amount, staker, expiry, signature);
     }
 
     // tries depositing using a signature and an EIP 1271 compliant wallet
@@ -1014,7 +1014,7 @@ contract StrategyManagerUnitTests_depositIntoStrategyWithSignature is StrategyMa
 
         address staker = cheats.addr(privateKey);
         IStrategy strategy = IStrategy(address(reenterer));
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
         uint256 amount = 1e18;
 
         uint256 nonceBefore = strategyManager.nonces(staker);
@@ -1052,7 +1052,7 @@ contract StrategyManagerUnitTests_depositIntoStrategyWithSignature is StrategyMa
     function test_Revert_WhenSignatureExpired() public {
         address staker = cheats.addr(privateKey);
         IStrategy strategy = dummyStrat;
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
         uint256 amount = 1e18;
 
         uint256 nonceBefore = strategyManager.nonces(staker);
@@ -1367,7 +1367,7 @@ contract StrategyManagerUnitTests_addShares is StrategyManagerUnitTests {
      */
     function test_Revert_WhenMaxStrategyListLength() external {
         address staker = address(this);
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
         uint256 amount = 1e18;
         IStrategy strategy = dummyStrat;
         uint256 MAX_STAKER_STRATEGY_LIST_LENGTH = 32;
@@ -1425,7 +1425,7 @@ contract StrategyManagerUnitTests_withdrawSharesAsTokens is StrategyManagerUnitT
         cheats.assume(staker != address(dummyStrat));
         cheats.assume(depositAmount > 0 && depositAmount < dummyToken.totalSupply() && depositAmount < sharesAmount);
         IStrategy strategy = dummyStrat;
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
         _depositIntoStrategySuccessfully(strategy, staker, depositAmount);
         cheats.expectRevert(IStrategyErrors.WithdrawalAmountExceedsTotalDeposits.selector);
         delegationManagerMock.withdrawSharesAsTokens(strategyManager, staker, strategy, sharesAmount, token);
@@ -1441,7 +1441,7 @@ contract StrategyManagerUnitTests_withdrawSharesAsTokens is StrategyManagerUnitT
         cheats.assume(staker != address(dummyStrat));
         cheats.assume(sharesAmount > 0 && sharesAmount < dummyToken.totalSupply() && depositAmount >= sharesAmount);
         IStrategy strategy = dummyStrat;
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
         _depositIntoStrategySuccessfully(strategy, staker, depositAmount);
         uint256 balanceBefore = token.balanceOf(staker);
         delegationManagerMock.withdrawSharesAsTokens(strategyManager, staker, strategy, sharesAmount, token);
@@ -1515,7 +1515,7 @@ contract StrategyManagerUnitTests_burnShares is StrategyManagerUnitTests {
         cheats.assume(staker != address(dummyStrat));
         cheats.assume(sharesToBurn > 0 && sharesToBurn < dummyToken.totalSupply() && depositAmount >= sharesToBurn);
         IStrategy strategy = dummyStrat;
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
         _depositIntoStrategySuccessfully(strategy, staker, depositAmount);
 
         // slash shares and increase amount to burn from DelegationManager
@@ -1554,7 +1554,7 @@ contract StrategyManagerUnitTests_burnShares is StrategyManagerUnitTests {
         cheats.assume(staker != address(0));
         cheats.assume(sharesToBurn > 0 && sharesToBurn < dummyToken.totalSupply() && depositAmount >= sharesToBurn);
         IStrategy strategy = dummyStrat;
-        IERC20 token = dummyToken;
+        IERC20Upgradeable token = dummyToken;
         _depositIntoStrategySuccessfully(strategy, staker, depositAmount);
 
         // slash shares and increase amount to burn from DelegationManager
@@ -1567,7 +1567,7 @@ contract StrategyManagerUnitTests_burnShares is StrategyManagerUnitTests {
         cheats.etch(address(token), address(revertToken).code);
         ERC20_SetTransferReverting_Mock(address(token)).setTransfersRevert(true);
 
-        cheats.expectRevert("SafeERC20: low-level call failed");
+        cheats.expectRevert("SafeERC20Upgradeable: low-level call failed");
         cheats.prank(address(delegationManagerMock));
         strategyManager.burnShares(strategy);
 

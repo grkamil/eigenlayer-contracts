@@ -54,7 +54,7 @@ contract User_M1 is User {
                 continue;
             }
 
-            IERC20 underlyingToken = strat.underlyingToken();
+            IERC20Upgradeable underlyingToken = strat.underlyingToken();
             underlyingToken.approve(address(strategyManager), tokenBalance);
             strategyManager.depositIntoStrategy(strat, underlyingToken, tokenBalance);
         }
@@ -95,7 +95,7 @@ contract User_M1_AltMethods is User_M1 {
             }
             
             // Approve token
-            IERC20 underlyingToken = strat.underlyingToken();
+            IERC20Upgradeable underlyingToken = strat.underlyingToken();
             underlyingToken.approve(address(strategyManager), tokenBalance);
 
             // Get signature

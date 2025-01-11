@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.27;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin-upgrades/contracts/token/ERC20/IERC20Upgradeable.sol";
 import "./IPauserRegistry.sol";
 import "./IStrategy.sol";
 
@@ -144,7 +144,7 @@ interface IRewardsCoordinatorTypes {
      */
     struct RewardsSubmission {
         StrategyAndMultiplier[] strategiesAndMultipliers;
-        IERC20 token;
+        IERC20Upgradeable token;
         uint256 amount;
         uint32 startTimestamp;
         uint32 duration;
@@ -161,7 +161,7 @@ interface IRewardsCoordinatorTypes {
      */
     struct OperatorDirectedRewardsSubmission {
         StrategyAndMultiplier[] strategiesAndMultipliers;
-        IERC20 token;
+        IERC20Upgradeable token;
         OperatorReward[] operatorRewards;
         uint32 startTimestamp;
         uint32 duration;
@@ -202,7 +202,7 @@ interface IRewardsCoordinatorTypes {
      * @param cumulativeEarnings The cumulative earnings of the earner for the token
      */
     struct TokenTreeMerkleLeaf {
-        IERC20 token;
+        IERC20Upgradeable token;
         uint256 cumulativeEarnings;
     }
 
@@ -339,7 +339,7 @@ interface IRewardsCoordinatorEvents is IRewardsCoordinatorTypes {
         address indexed earner,
         address indexed claimer,
         address indexed recipient,
-        IERC20 token,
+        IERC20Upgradeable token,
         uint256 claimedAmount
     );
 }
@@ -557,7 +557,7 @@ interface IRewardsCoordinator is IRewardsCoordinatorErrors, IRewardsCoordinatorE
     ) external view returns (address);
 
     /// @notice Mapping: claimer => token => total amount claimed
-    function cumulativeClaimed(address claimer, IERC20 token) external view returns (uint256);
+    function cumulativeClaimed(address claimer, IERC20Upgradeable token) external view returns (uint256);
 
     /// @notice the defautl split for all operators across all avss
     function defaultOperatorSplitBips() external view returns (uint16);

@@ -295,7 +295,7 @@ interface IDelegationManager is ISignatureUtils, IDelegationManagerErrors, IDele
      */
     function completeQueuedWithdrawal(
         Withdrawal calldata withdrawal,
-        IERC20[] calldata tokens,
+        IERC20Upgradeable[] calldata tokens,
         bool receiveAsTokens
     ) external;
 
@@ -309,7 +309,7 @@ interface IDelegationManager is ISignatureUtils, IDelegationManagerErrors, IDele
      */
     function completeQueuedWithdrawals(
         Withdrawal[] calldata withdrawals,
-        IERC20[][] calldata tokens,
+        IERC20Upgradeable[][] calldata tokens,
         bool[] calldata receiveAsTokens
     ) external;
 

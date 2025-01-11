@@ -33,9 +33,9 @@ contract StrategyFactoryUnitTests is EigenLayerUnitTestSetup {
     event StrategyBeaconModified(IBeacon previousBeacon, IBeacon newBeacon);
 
     /// @notice Emitted whenever a slot is set in the `deployedStrategies` mapping
-    event StrategySetForToken(IERC20 token, IStrategy strategy);
+    event StrategySetForToken(IERC20Upgradeable token, IStrategy strategy);
 
-    event TokenBlacklisted(IERC20 token);
+    event TokenBlacklisted(IERC20Upgradeable token);
 
     function setUp() virtual override public {
         EigenLayerUnitTestSetup.setUp();
@@ -106,24 +106,24 @@ contract StrategyFactoryUnitTests is EigenLayerUnitTestSetup {
     function test_deployNewStrategy() public {
         // cheats.expectEmit(true, true, true, true, address(strategyFactory));
         // StrategySetForToken(underlyingToken, newStrategy);
-        StrategyBase newStrategy = StrategyBase(address(strategyFactory.deployNewStrategy(underlyingToken)));
+        StrategyBase newStrategy = StrategyBase(address(strategyFactory.deployNewStrategy(IERC20Upgradeable(address(underlyingToken)))));
 
-        require(strategyFactory.deployedStrategies(underlyingToken) == newStrategy, "deployedStrategies mapping not set correctly");
+        require(strategyFactory.deployedStrategies(IERC20Upgradeable(address(underlyingToken))) == newStrategy, "deployedStrategies mapping not set correctly");
         require(address(newStrategy.strategyManager()) == address(strategyManagerMock), "strategyManager not set correctly");
         require(strategyBeacon.implementation() == address(strategyImplementation), "strategyImplementation not set correctly");
         require(newStrategy.pauserRegistry() == pauserRegistry, "pauserRegistry not set correctly");
-        require(newStrategy.underlyingToken() == underlyingToken, "underlyingToken not set correctly");
+        require(newStrategy.underlyingToken() == IERC20Upgradeable(address(underlyingToken)), "underlyingToken not set correctly");
         require(strategyManagerMock.strategyIsWhitelistedForDeposit(newStrategy), "underlyingToken is not whitelisted");
     }
 
     function test_deployNewStrategy_revert_StrategyAlreadyExists() public {
         test_deployNewStrategy();
         cheats.expectRevert(IStrategyFactory.StrategyAlreadyExists.selector);
-        strategyFactory.deployNewStrategy(underlyingToken);
+        strategyFactory.deployNewStrategy(IERC20Upgradeable(address(underlyingToken)));
     }
 
-    function test_blacklistTokens(IERC20 token) public {
-        IERC20[] memory tokens = new IERC20[](1);
+    function test_blacklistTokens(IERC20Upgradeable token) public {
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](1);
         tokens[0] = token;
 
         vm.prank(strategyFactory.owner());
@@ -136,16 +136,16 @@ contract StrategyFactoryUnitTests is EigenLayerUnitTestSetup {
     }
 
     function test_blacklistTokens_RemovesFromWhitelist() public {
-        IERC20[] memory tokens = new IERC20[](1);
-        tokens[0] = underlyingToken;
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](1);
+        tokens[0] = IERC20Upgradeable(address(underlyingToken));
 
-        IStrategy newStrat = strategyFactory.deployNewStrategy(underlyingToken);
+        IStrategy newStrat = strategyFactory.deployNewStrategy(IERC20Upgradeable(address(underlyingToken)));
         IStrategy[] memory toRemove = new IStrategy[](1);
         toRemove[0] = newStrat;
 
         vm.prank(strategyFactory.owner());
         cheats.expectEmit(true, false, false, false, address(strategyFactory));
-        emit TokenBlacklisted(underlyingToken);
+        emit TokenBlacklisted(IERC20Upgradeable(address(underlyingToken)));
         cheats.expectCall(address(strategyManagerMock), abi.encodeWithSelector(
             strategyManagerMock.removeStrategiesFromDepositWhitelist.selector,
             toRemove

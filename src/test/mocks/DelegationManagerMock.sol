@@ -89,7 +89,7 @@ contract DelegationManagerMock is Test {
     function addShares(
         IStrategyManager strategyManager,
         address staker,
-        IERC20 token,
+        IERC20Upgradeable token,
         IStrategy strategy,
         uint256 shares
     ) external {
@@ -110,7 +110,7 @@ contract DelegationManagerMock is Test {
         address recipient,
         IStrategy strategy,
         uint256 shares,
-        IERC20 token
+        IERC20Upgradeable token
     ) external {
         strategyManager.withdrawSharesAsTokens(recipient, strategy, token, shares);
     }

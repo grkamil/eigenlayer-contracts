@@ -30,9 +30,9 @@ contract RewardsCoordinatorUnitTests is EigenLayerUnitTestSetup, IRewardsCoordin
     RewardsCoordinator public rewardsCoordinatorImplementation;
 
     // Mocks
-    IERC20 token1;
-    IERC20 token2;
-    IERC20 token3;
+    IERC20Upgradeable token1;
+    IERC20Upgradeable token2;
+    IERC20Upgradeable token3;
     IStrategy strategyMock1;
     IStrategy strategyMock2;
     IStrategy strategyMock3;
@@ -61,7 +61,7 @@ contract RewardsCoordinatorUnitTests is EigenLayerUnitTestSetup, IRewardsCoordin
     /// @notice the split for all operators across all avss
     uint16 defaultSplitBips = 1000;
 
-    IERC20[] rewardTokens;
+    IERC20Upgradeable[] rewardTokens;
 
     // RewardsCoordinator Constants
 
@@ -131,9 +131,9 @@ contract RewardsCoordinatorUnitTests is EigenLayerUnitTestSetup, IRewardsCoordin
         );
 
         // Deploy mock token and strategy
-        token1 = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, address(this));
-        token2 = new ERC20PresetFixedSupply("jeo boden", "MOCK2", mockTokenInitialSupply, address(this));
-        token3 = new ERC20PresetFixedSupply("pepe wif avs", "MOCK3", mockTokenInitialSupply, address(this));
+        token1 = IERC20Upgradeable(address(new ERC20PresetFixedSupply("Mock Token 1", "MOCK1", mockTokenInitialSupply, address(this))));
+        token2 = IERC20Upgradeable(address(new ERC20PresetFixedSupply("Mock token 2", "MOCK2", mockTokenInitialSupply, address(this))));
+        token3 = IERC20Upgradeable(address(new ERC20PresetFixedSupply("Mock token 3", "MOCK3", mockTokenInitialSupply, address(this))));
 
         strategyImplementation = new StrategyBase(IStrategyManager(address(strategyManagerMock)), pauserRegistry);
         strategyMock1 = StrategyBase(
@@ -198,14 +198,14 @@ contract RewardsCoordinatorUnitTests is EigenLayerUnitTestSetup, IRewardsCoordin
     function _deployMockRewardTokens(address owner, uint256 numTokens) internal virtual {
         cheats.startPrank(owner);
         for (uint256 i = 0; i < numTokens; ++i) {
-            IERC20 token = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, owner);
+            IERC20Upgradeable token = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, owner)));
             rewardTokens.push(token);
             token.approve(address(rewardsCoordinator), mockTokenInitialSupply);
         }
         cheats.stopPrank();
     }
 
-    function _getBalanceForTokens(IERC20[] memory tokens, address holder) internal view returns (uint256[] memory) {
+    function _getBalanceForTokens(IERC20Upgradeable[] memory tokens, address holder) internal view returns (uint256[] memory) {
         uint256[] memory balances = new uint256[](tokens.length);
         for (uint256 i = 0; i < tokens.length; ++i) {
             balances[i] = tokens[i].balanceOf(holder);
@@ -223,7 +223,7 @@ contract RewardsCoordinatorUnitTests is EigenLayerUnitTestSetup, IRewardsCoordin
         if (claimer == address(0)) {
             claimer = earner;
         }
-        IERC20 token;
+        IERC20Upgradeable token;
         uint256 claimedAmount;
         for (uint256 i = 0; i < claim.tokenLeaves.length; ++i) {
             token = claim.tokenLeaves[i].token;
@@ -806,7 +806,7 @@ contract RewardsCoordinatorUnitTests_createAVSRewardsSubmission is RewardsCoordi
         RewardsSubmission[] memory rewardsSubmissions = new RewardsSubmission[](1);
         rewardsSubmissions[0] = RewardsSubmission({
             strategiesAndMultipliers: defaultStrategyAndMultipliers,
-            token: IERC20(address(reenterer)),
+            token: IERC20Upgradeable(address(reenterer)),
             amount: amount,
             startTimestamp: uint32(block.timestamp),
             duration: 0
@@ -833,7 +833,7 @@ contract RewardsCoordinatorUnitTests_createAVSRewardsSubmission is RewardsCoordi
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         amount = bound(amount, 1, mockTokenInitialSupply);
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
@@ -872,7 +872,7 @@ contract RewardsCoordinatorUnitTests_createAVSRewardsSubmission is RewardsCoordi
     ) public filterFuzzedAddressInputs(avs) {
         // 1. Bound fuzz inputs
         amount = bound(amount, 1e38, type(uint256).max);
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", amount, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", amount, avs)));
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
         startTimestamp = bound(
@@ -907,7 +907,7 @@ contract RewardsCoordinatorUnitTests_createAVSRewardsSubmission is RewardsCoordi
         uint256 amount
     ) public filterFuzzedAddressInputs(avs) {
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         amount = bound(amount, 1, mockTokenInitialSupply);
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
@@ -951,7 +951,7 @@ contract RewardsCoordinatorUnitTests_createAVSRewardsSubmission is RewardsCoordi
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         amount = bound(amount, 1, mockTokenInitialSupply);
         duration = bound(duration, MAX_REWARDS_DURATION + 1, type(uint32).max);
         startTimestamp = bound(
@@ -990,7 +990,7 @@ contract RewardsCoordinatorUnitTests_createAVSRewardsSubmission is RewardsCoordi
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         amount = bound(amount, 1, mockTokenInitialSupply);
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         cheats.assume(duration % CALCULATION_INTERVAL_SECONDS != 0);
@@ -1036,7 +1036,7 @@ contract RewardsCoordinatorUnitTests_createAVSRewardsSubmission is RewardsCoordi
         fuzzBlockTimestamp = bound(fuzzBlockTimestamp, uint256(MAX_RETROACTIVE_LENGTH), block.timestamp);
         cheats.warp(fuzzBlockTimestamp);
 
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         amount = bound(amount, 1, mockTokenInitialSupply);
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
@@ -1074,7 +1074,7 @@ contract RewardsCoordinatorUnitTests_createAVSRewardsSubmission is RewardsCoordi
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         amount = bound(amount, 1, mockTokenInitialSupply);
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
@@ -1112,7 +1112,7 @@ contract RewardsCoordinatorUnitTests_createAVSRewardsSubmission is RewardsCoordi
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         amount = bound(amount, 1, mockTokenInitialSupply);
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
@@ -1159,7 +1159,7 @@ contract RewardsCoordinatorUnitTests_createAVSRewardsSubmission is RewardsCoordi
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         amount = bound(amount, 1, mockTokenInitialSupply);
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
@@ -1334,7 +1334,7 @@ contract RewardsCoordinatorUnitTests_createRewardsForAllSubmission is RewardsCoo
         RewardsSubmission[] memory rewardsSubmissions = new RewardsSubmission[](1);
         rewardsSubmissions[0] = RewardsSubmission({
             strategiesAndMultipliers: defaultStrategyAndMultipliers,
-            token: IERC20(address(reenterer)),
+            token: IERC20Upgradeable(address(reenterer)),
             amount: amount,
             startTimestamp: uint32(block.timestamp),
             duration: 0
@@ -1376,12 +1376,12 @@ contract RewardsCoordinatorUnitTests_createRewardsForAllSubmission is RewardsCoo
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply(
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply(
             "dog wif hat",
             "MOCK1",
             mockTokenInitialSupply,
             rewardsForAllSubmitter
-        );
+        )));
         amount = bound(amount, 1, mockTokenInitialSupply);
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
@@ -1566,7 +1566,7 @@ contract RewardsCoordinatorUnitTests_createRewardsForAllEarners is RewardsCoordi
         RewardsSubmission[] memory rewardsSubmissions = new RewardsSubmission[](1);
         rewardsSubmissions[0] = RewardsSubmission({
             strategiesAndMultipliers: defaultStrategyAndMultipliers,
-            token: IERC20(address(reenterer)),
+            token: IERC20Upgradeable(address(reenterer)),
             amount: amount,
             startTimestamp: uint32(block.timestamp),
             duration: 0
@@ -1608,12 +1608,12 @@ contract RewardsCoordinatorUnitTests_createRewardsForAllEarners is RewardsCoordi
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply(
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply(
             "dog wif hat",
             "MOCK1",
             mockTokenInitialSupply,
             rewardsForAllSubmitter
-        );
+        )));
         amount = bound(amount, 1, mockTokenInitialSupply);
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
@@ -1863,7 +1863,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
             memory operatorDirectedRewardsSubmissions = new OperatorDirectedRewardsSubmission[](1);
         operatorDirectedRewardsSubmissions[0] = OperatorDirectedRewardsSubmission({
             strategiesAndMultipliers: defaultStrategyAndMultipliers,
-            token: IERC20(address(reenterer)),
+            token: IERC20Upgradeable(address(reenterer)),
             operatorRewards: defaultOperatorRewards,
             startTimestamp: uint32(startTimestamp),
             duration: uint32(duration),
@@ -1897,7 +1897,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
         startTimestamp = bound(
@@ -1938,7 +1938,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
         startTimestamp = bound(
@@ -1979,7 +1979,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
         startTimestamp = bound(
@@ -2020,7 +2020,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
         startTimestamp = bound(
@@ -2063,7 +2063,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
         startTimestamp = bound(
@@ -2106,7 +2106,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
 
         // 1. Bound fuzz inputs to valid ranges and amounts
         amount = bound(amount, 1e38, type(uint256).max - 5e18);
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
         startTimestamp = bound(
@@ -2147,7 +2147,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         duration = bound(duration, MAX_REWARDS_DURATION + 1, type(uint32).max);
         startTimestamp = bound(
             startTimestamp,
@@ -2186,7 +2186,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         cheats.assume(duration % CALCULATION_INTERVAL_SECONDS != 0);
         startTimestamp = bound(
@@ -2226,7 +2226,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
         startTimestamp = bound(
@@ -2268,7 +2268,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
         startTimestamp = bound(startTimestamp, 0, uint32(block.timestamp) - MAX_RETROACTIVE_LENGTH - 1);
@@ -2302,7 +2302,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
         startTimestamp = bound(
@@ -2340,7 +2340,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
         startTimestamp = bound(
@@ -2381,7 +2381,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
         startTimestamp = bound(
@@ -2431,7 +2431,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
         cheats.prank(rewardsCoordinator.owner());
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, avs)));
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
         startTimestamp = bound(
@@ -2518,7 +2518,7 @@ contract RewardsCoordinatorUnitTests_createOperatorDirectedAVSRewardsSubmission 
         );
 
         // 1. Bound fuzz inputs to valid ranges and amounts
-        IERC20 rewardToken = new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, defaultAppointee);
+        IERC20Upgradeable rewardToken = IERC20Upgradeable(address(new ERC20PresetFixedSupply("dog wif hat", "MOCK1", mockTokenInitialSupply, defaultAppointee)));
         duration = bound(duration, 0, MAX_REWARDS_DURATION);
         duration = duration - (duration % CALCULATION_INTERVAL_SECONDS);
         startTimestamp = bound(
@@ -2801,7 +2801,7 @@ contract RewardsCoordinatorUnitTests_processClaim is RewardsCoordinatorUnitTests
         RewardsCoordinatorUnitTests.setUp();
 
         // Create mock token to use bytecode later to etch
-        IERC20 mockToken = new ERC20Mock();
+        IERC20Upgradeable mockToken = new ERC20Mock();
         mockTokenBytecode = address(mockToken).code;
     }
 
@@ -3606,7 +3606,7 @@ contract RewardsCoordinatorUnitTests_processClaim is RewardsCoordinatorUnitTests
             string memory amountKey = string.concat(".TokenLeaves[", cheats.toString(i), "].CumulativeEarnings");
             string memory leafIndicesKey = string.concat(".LeafIndices[", cheats.toString(i), "]");
 
-            IERC20 token = IERC20(stdJson.readAddress(claimProofData, tokenKey));
+            IERC20Upgradeable token = IERC20Upgradeable(stdJson.readAddress(claimProofData, tokenKey));
             uint256 cumulativeEarnings = stdJson.readUint(claimProofData, amountKey);
             tokenLeaves[i] = TokenTreeMerkleLeaf({
                 token: token,

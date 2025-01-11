@@ -4,7 +4,6 @@ pragma solidity ^0.8.27;
 import "forge-std/Test.sol";
 
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
 
 import "src/contracts/libraries/BeaconChainProofs.sol";
 import "src/contracts/libraries/SlashingLib.sol";
@@ -17,7 +16,6 @@ import "src/test/integration/users/User_M1.t.sol";
 abstract contract IntegrationBase is IntegrationDeployer {
     using StdStyle for *;
     using SlashingLib for *;
-    using Strings for *;
     using print for *;
 
     using ArrayLib for IStrategy[];
@@ -80,7 +78,7 @@ abstract contract IntegrationBase is IntegrationDeployer {
         uint[] memory addedShares;
 
         if (forkType == MAINNET && !isUpgraded) {
-            string memory operatorName = string.concat("M2Operator", numOperators.toString());
+            string memory operatorName = string.concat("M2Operator", cheats.toString(numOperators));
 
             // Create an operator for M2.
             // TODO: Allow this operator to have ETH 
@@ -93,7 +91,7 @@ abstract contract IntegrationBase is IntegrationDeployer {
 
             operatorsToMigrate.push(operator);
         } else {
-            string memory operatorName = string.concat("operator", numOperators.toString());
+            string memory operatorName = string.concat("operator", cheats.toString(numOperators));
 
             (operator, strategies, tokenBalances) = _randUser_NoETH(operatorName);
 
@@ -115,7 +113,7 @@ abstract contract IntegrationBase is IntegrationDeployer {
     }
 
     function _newRandomAVS() internal returns (AVS avs, OperatorSet[] memory operatorSets) {
-        string memory avsName = string.concat("avs", numAVSs.toString());
+        string memory avsName = string.concat("avs", cheats.toString(numAVSs));
         avs = _genRandAVS(avsName);
         operatorSets = avs.createOperatorSets(_randomStrategies());
         ++numAVSs;
@@ -187,7 +185,7 @@ abstract contract IntegrationBase is IntegrationDeployer {
         return result;
     }
     
-    function _getTokenName(IERC20 token) internal view returns (string memory) {
+    function _getTokenName(IERC20Upgradeable token) internal view returns (string memory) {
         if (token == NATIVE_ETH) {
             return "Native ETH";
         }
@@ -864,7 +862,7 @@ abstract contract IntegrationBase is IntegrationDeployer {
     // since the last snapshot
     function assert_Snap_Added_TokenBalances(
         User staker,
-        IERC20[] memory tokens,
+        IERC20Upgradeable[] memory tokens,
         uint[] memory addedTokens,
         string memory err
     ) internal {
@@ -888,7 +886,7 @@ abstract contract IntegrationBase is IntegrationDeployer {
         uint[] memory removedTokens,
         string memory err
     ) internal {
-        IERC20[] memory tokens = _getUnderlyingTokens(strategies);
+        IERC20Upgradeable[] memory tokens = _getUnderlyingTokens(strategies);
 
         uint[] memory curTokenBalances = _getTokenBalances(staker, tokens);
         // Use timewarp to get previous token balances
@@ -908,7 +906,7 @@ abstract contract IntegrationBase is IntegrationDeployer {
         User staker,
         string memory err
     ) internal {
-        IERC20[] memory tokens = allTokens;
+        IERC20Upgradeable[] memory tokens = allTokens;
 
         uint[] memory curTokenBalances = _getTokenBalances(staker, tokens);
         // Use timewarp to get previous token balances
@@ -1315,8 +1313,8 @@ abstract contract IntegrationBase is IntegrationDeployer {
     }
 
     /// @dev Converts a list of strategies to underlying tokens
-    function _getUnderlyingTokens(IStrategy[] memory strategies) internal view returns (IERC20[] memory) {
-        IERC20[] memory tokens = new IERC20[](strategies.length);
+    function _getUnderlyingTokens(IStrategy[] memory strategies) internal view returns (IERC20Upgradeable[] memory) {
+        IERC20Upgradeable[] memory tokens = new IERC20Upgradeable[](strategies.length);
 
         for (uint i = 0; i < tokens.length; i++) {
             IStrategy strat = strategies[i];
@@ -1538,11 +1536,11 @@ abstract contract IntegrationBase is IntegrationDeployer {
         return delegationManager.cumulativeWithdrawalsQueued(address(staker));
     }
 
-    function _getPrevTokenBalances(User staker, IERC20[] memory tokens) internal timewarp() returns (uint[] memory) {
+    function _getPrevTokenBalances(User staker, IERC20Upgradeable[] memory tokens) internal timewarp() returns (uint[] memory) {
         return _getTokenBalances(staker, tokens);
     }
 
-    function _getTokenBalances(User staker, IERC20[] memory tokens) internal view returns (uint[] memory) {
+    function _getTokenBalances(User staker, IERC20Upgradeable[] memory tokens) internal view returns (uint[] memory) {
         uint[] memory balances = new uint[](tokens.length);
         
         for (uint i = 0; i < tokens.length; i++) {
