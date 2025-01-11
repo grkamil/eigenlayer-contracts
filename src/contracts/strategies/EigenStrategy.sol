@@ -86,7 +86,11 @@ contract EigenStrategy is StrategyBase {
      * @param token token to be withdrawn, can be either EIGEN or bEIGEN. If EIGEN, then bEIGEN is wrapped into EIGEN
      * @param amountToSend amount of tokens to transfer
      */
-    function _afterWithdrawal(address recipient, IERC20Upgradeable token, uint256 amountToSend) internal virtual override {
+    function _afterWithdrawal(
+        address recipient,
+        IERC20Upgradeable token,
+        uint256 amountToSend
+    ) internal virtual override {
         if (token == EIGEN) {
             // wrap bEIGEN into EIGEN assuming a 1-1 wrapping amount
             // the strategy will then hold `amountToSend` of EIGEN

@@ -83,7 +83,11 @@ interface IStrategyManager is IStrategyManagerErrors, IStrategyManagerEvents, IS
      * WARNING: Depositing tokens that allow reentrancy (eg. ERC-777) into a strategy is not recommended.  This can lead to attack vectors
      *          where the token balance and corresponding strategy shares are not in sync upon reentrancy.
      */
-    function depositIntoStrategy(IStrategy strategy, IERC20Upgradeable token, uint256 amount) external returns (uint256 shares);
+    function depositIntoStrategy(
+        IStrategy strategy,
+        IERC20Upgradeable token,
+        uint256 amount
+    ) external returns (uint256 shares);
 
     /**
      * @notice Used for depositing an asset into the specified strategy with the resultant shares credited to `staker`,
